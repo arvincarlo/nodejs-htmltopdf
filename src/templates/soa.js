@@ -1,4 +1,4 @@
-const soaTemplate = (users, chartImageBase64) => `
+const soaTemplate = (users, pieChart, lineChart) => `
 <!DOCTYPE html>
 <html>
   <head>
@@ -138,9 +138,12 @@ const soaTemplate = (users, chartImageBase64) => `
       <div class="date">Generated: ${new Date().toLocaleDateString()}</div>
       <div class="main-content">
         <div class="chart-container">
-          <img src="${chartImageBase64}" width="400" height="400" />
+          <img src="${pieChart}" width="400" height="400" />
         </div>
         <div class="table-container">
+          <div class="chart-container">
+            <img src="${lineChart}" width="400" height="400" />
+          </div>
           <table>
             <thead>
               <tr>

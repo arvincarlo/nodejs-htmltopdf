@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import htmlToPDF from "../helpers/html-to-pdf.js";
-import { generatePieChart } from "../helpers/chartCanvas.js";
+import { generatePieChart, generateLineChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
 import soaTemplate from "../templates/soa.js";
 
@@ -19,9 +19,10 @@ router.post('/', async (req, res) => {
     if (!users || users.length === 0) return res.status(404).send('No users found');
 
     // Create the Pie chart image
-    const chartImageBase64 = await generatePieChart(users);
+    const pieChart = await generatePieChart(users);
+    const lineChart = await generateLineChart(users);
     
-    const html = soaTemplate(users, chartImageBase64);
+    const html = soaTemplate(users, pieChart, lineChart);
     const pdf = await htmlToPDF(html);
     res.contentType('application/pdf');
     res.send(pdf);
