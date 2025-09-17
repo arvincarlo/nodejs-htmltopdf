@@ -2,7 +2,8 @@ import puppeteer from "puppeteer";
 
 const defaultOptions = {
   format: 'A4',
-  printBackground: true
+  printBackground: true,
+  landscape: true,
 }
 
 async function htmlToPDF(html, options = defaultOptions) {
