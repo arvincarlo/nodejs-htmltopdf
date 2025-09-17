@@ -1,18 +1,35 @@
 import express from "express";
 const router = express.Router();
 import htmlToPDF from "../helpers/html-to-pdf.js";
+import { generatePieChart } from "../helpers/chartCanvas.js";
+import { PrismaClient } from "@prisma/client";
+import soaTemplate from "../templates/soa.js";
 
+const prisma = new PrismaClient();
+
+
+// res.send('Conversion endpoint');
 router.post('/', async (req, res) => {
-  // res.send('Conversion endpoint');.
-  const { html } = req.body;
-  console.log(html);
+  try {
+    const { role } = req.body;
+    if (!role) return res.status(400).send("Role is required");
 
-  // Check if falsy
-  if (!html) return res.status(400).send('HTML content is required');
+    const users = (role == "all") ? await prisma.userDetailsModel.findMany() : await prisma.userDetailsModel.findMany({ where: { role } });
 
-  const pdf = await htmlToPDF(html);
-  res.contentType('application/pdf');
-  res.send(pdf);
+    if (!users || users.length === 0) return res.status(404).send('No users found');
+
+    // Create the Pie chart image
+    const chartImageBase64 = await generatePieChart(users);
+    
+    const html = soaTemplate(users, chartImageBase64);
+    const pdf = await htmlToPDF(html);
+    res.contentType('application/pdf');
+    res.send(pdf);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    res.status(500).send('Internal Server Error');
+  }
+
 });
 
 export default router;
