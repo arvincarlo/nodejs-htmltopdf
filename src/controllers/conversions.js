@@ -30,7 +30,10 @@ router.post('/', async (req, res) => {
     console.error('Error generating PDF:', error);
     res.status(500).send('Internal Server Error');
   }
+});
 
+router.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'API is healthy' });
 });
 
 export default router;

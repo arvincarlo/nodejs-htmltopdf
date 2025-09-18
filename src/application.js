@@ -1,4 +1,4 @@
-import router from './controllers/conversion.js';
+import router from './controllers/conversions.js';
 import express from "express";
 import { configDotenv } from "dotenv";
 import cors from "cors";
