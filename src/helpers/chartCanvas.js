@@ -11,7 +11,7 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({
 });
 
 export async function generatePieChart(users) {
-  // Count roles
+  // Count users per role
   const roleCounts = {};
   users.forEach(u => {
     roleCounts[u.role] = (roleCounts[u.role] || 0) + 1;
@@ -33,10 +33,7 @@ export async function generatePieChart(users) {
         legend: { position: 'bottom' },
         datalabels: {
           color: '#fff',
-          font: {
-            weight: 'bold',
-            size: 16
-          },
+          font: { weight: 'bold', size: 16 },
           formatter: (value) => value
         }
       }
@@ -48,7 +45,6 @@ export async function generatePieChart(users) {
 }
 
 export async function generateLineChart(users) {
-  // Example: Count users per role for each role (x-axis: role, y-axis: count)
   const roleCounts = {};
   users.forEach(u => {
     roleCounts[u.role] = (roleCounts[u.role] || 0) + 1;

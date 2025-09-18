@@ -4,11 +4,10 @@ import htmlToPDF from "../helpers/html-to-pdf.js";
 import { generatePieChart, generateLineChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
 import soaTemplate from "../templates/soa.js";
+import getUserModel from "../models/users.js";
 
 const prisma = new PrismaClient();
 
-
-// res.send('Conversion endpoint');
 router.post('/', async (req, res) => {
   try {
     const { role } = req.body;
@@ -35,5 +34,23 @@ router.post('/', async (req, res) => {
 router.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'API is healthy' });
 });
+
+router.get('/users', async(req, res) => {
+  try {
+    const users = await getUserModel("all");
+    const pieChart = await generatePieChart(users);
+    const lineChart = await generateLineChart(users);
+
+    const html = soaTemplate(users, pieChart, lineChart);
+    const pdf = await htmlToPDF(html);    
+
+    res.contentType('application/pdf');
+    res.send(pdf);
+  } catch(error) {
+    console.error('Error fetching the users: ', error);
+    res.status(500).send('No users found.');
+  }
+})
+
 
 export default router;
