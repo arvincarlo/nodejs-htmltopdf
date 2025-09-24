@@ -4,7 +4,15 @@ import htmlToPDF from "../helpers/html-to-pdf.js";
 import { generatePieChart, generateLineChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
 import soaTemplate from "../templates/soa.js";
+import summaryTemplate from '../templates/summary.js';
 import getUserModel from "../models/users.js";
+import fs from 'fs';
+
+function getBase64Image(filePath) {
+  const image = fs.readFileSync(filePath);
+  const ext = filePath.split('.').pop();
+  return `data:image/${ext};base64,${image.toString('base64')}`;
+}
 
 const prisma = new PrismaClient();
 
@@ -32,7 +40,12 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'API is healthy' });
+  const now = new Date();
+  res.json({
+    status: 'OK',
+    message: 'export api is healthy',
+    datetime: `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
+  });
 });
 
 router.get('/users', async(req, res) => {
@@ -41,8 +54,17 @@ router.get('/users', async(req, res) => {
     const pieChart = await generatePieChart(users);
     const lineChart = await generateLineChart(users);
 
-    const html = soaTemplate(users, pieChart, lineChart);
-    const pdf = await htmlToPDF(html);    
+    // const html = soaTemplate(users, pieChart, lineChart);
+    const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
+    const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
+
+    const html = summaryTemplate({
+      summaryTitle: "User Summary Report",
+      summaryContent: "Total users: 100",
+      headerLogoBase64,
+      headerBgBase64
+    });
+    const pdf = await htmlToPDF(html);
 
     res.contentType('application/pdf');
     res.send(pdf);

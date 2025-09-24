@@ -1,4 +1,4 @@
-import router from './controllers/conversions.js';
+import router from './controllers/export.js';
 import express from "express";
 import { configDotenv } from "dotenv";
 import cors from "cors";
@@ -14,7 +14,8 @@ class Application {
 
   useMiddleware() {
     this.app.use(express.json());
-    this.app.use('/conversions', router);
+    this.app.use(express.static('public'));
+    this.app.use('/export', router);
   }
 
   listen() {
