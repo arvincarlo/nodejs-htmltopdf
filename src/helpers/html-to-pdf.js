@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 
 const defaultOptions = {
-  format: 'A3', // Largest ISO PDF format
+  format: 'A3',
   printBackground: true,
   landscape: true,
 }

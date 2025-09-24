@@ -87,14 +87,17 @@ router.get('/users', async(req, res) => {
     // const html = soaTemplate(users, pieChart, lineChart);
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
+    const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
 
     const html = summaryTemplate({
       summaryTitle: "User Summary Report",
       summaryContent: "Total users: 100",
       headerLogoBase64,
       headerBgBase64,
+      footerLogoBase64,
       data: {
         month: 'Jun',
+        year: '2024',
         accountName: 'Jane Peterson',
         unitTrustsValue: 2000000,
         structuredProductsValue: 100000,

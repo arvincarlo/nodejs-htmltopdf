@@ -4,6 +4,7 @@ const summaryTemplate = ({
   summaryContent = "",
   headerLogoBase64 = headerLogoBase64,
   headerBgBase64 = headerBgBase64,
+  footerLogoBase64 = footerLogoBase64, 
   data,
   pieChart,
 }) => `
@@ -23,6 +24,14 @@ const summaryTemplate = ({
         position: relative;
         min-height: 110vh;
         height: auto;
+      }
+      .footer-logo-fixed {
+        position: fixed;
+        right: 40px;
+        bottom: 40px;
+        width: 166.13px;
+        height: auto;
+        z-index: 999;
       }
       .header {
         width: 100%;
@@ -126,7 +135,7 @@ const summaryTemplate = ({
         width: 80%;
       }
       .summary-table {
-        width: 1196px;
+        width: 1160px;
         height: 329px;
         border: 1px solid #000000;
         border-radius: 10px;
@@ -396,7 +405,6 @@ const summaryTemplate = ({
         </div>
       </div>
       <div class="summary-content-area">
-        <!-- You can place this inside your summary.js template's .summary-content-area div -->
         <div class="document-title">Portfolio Holdings Statement</div>
         <div>
           as of ${data.month} ${data.year} for
@@ -608,6 +616,7 @@ const summaryTemplate = ({
             </div>
           </div>
         </div>
+        <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
       </div>
     </div>
   </body>
