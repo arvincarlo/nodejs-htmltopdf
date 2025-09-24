@@ -5,10 +5,12 @@ const height = 400;
 const chartJSNodeCanvas = new ChartJSNodeCanvas({
   width,
   height,
-  plugins: {
-    modern: ['chartjs-plugin-datalabels']
-  }
 });
+
+// Add this to show the labels
+// plugins: {
+//   modern: ['chartjs-plugin-datalabels']
+// }
 
 export async function generatePieChart(users) {
   // Count users per role

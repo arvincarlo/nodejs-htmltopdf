@@ -64,7 +64,8 @@ router.post('/users', async(req, res) => {
       summaryContent: "Total users: 100",
       headerLogoBase64,
       headerBgBase64,
-      data
+      data,
+      pieChart
     });
     const pdf = await htmlToPDF(html);
 
@@ -74,7 +75,44 @@ router.post('/users', async(req, res) => {
     console.error('Error fetching the users: ', error);
     res.status(500).send('No users found.');
   }
-})
+});
+
+router.get('/users', async(req, res) => {
+  const data = req.body;
+  try {
+    const users = await getUserModel("all");
+    const pieChart = await generatePieChart(users);
+    const lineChart = await generateLineChart(users);
+
+    // const html = soaTemplate(users, pieChart, lineChart);
+    const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
+    const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
+
+    const html = summaryTemplate({
+      summaryTitle: "User Summary Report",
+      summaryContent: "Total users: 100",
+      headerLogoBase64,
+      headerBgBase64,
+      data: {
+        month: 'Jun',
+        accountName: 'Jane Peterson',
+        unitTrustsValue: 2000000,
+        structuredProductsValue: 100000,
+        equitiesValue: 800000,
+        fixedIncomeValue: 1500000,
+        moneyMarketValue: 1000000
+      },
+      pieChart
+    });
+    const pdf = await htmlToPDF(html);
+
+    res.contentType('application/pdf');
+    res.send(pdf);
+  } catch(error) {
+    console.error('Error fetching the users: ', error);
+    res.status(500).send('No users found.');
+  }
+});
 
 
 export default router;

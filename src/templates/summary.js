@@ -4,7 +4,8 @@ const summaryTemplate = ({
   summaryContent = "",
   headerLogoBase64 = headerLogoBase64,
   headerBgBase64 = headerBgBase64,
-  data
+  data,
+  pieChart,
 }) => `
 <!DOCTYPE html>
 <html>
@@ -369,6 +370,22 @@ const summaryTemplate = ({
         right: 0;
         bottom: 0;
       }
+      .pie-chart-container {
+        min-width: 270px;
+        min-height: 270px;
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pie-chart-container img {
+        display: block;
+        width: 270px;
+        height: 270px;
+        object-fit: contain;
+      }
     </style>
   </head>
   <body>
@@ -493,8 +510,9 @@ const summaryTemplate = ({
                       Product Holdings
                     </div>
                     <div class="flex align-center justify-center">
-                      <!-- Static placeholder for DonutChart -->
-                      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAD..." alt="Donut Chart" style="width:120px;height:120px;" />
+                      <div class="pie-chart-container">
+                        <img src="${pieChart}" width="420" height="420" />
+                      </div>
                     </div>
                   </div>
                   <div class="chart-breakdown-container">
