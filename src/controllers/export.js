@@ -48,7 +48,8 @@ router.get('/health', (req, res) => {
   });
 });
 
-router.get('/users', async(req, res) => {
+router.post('/users', async(req, res) => {
+  const data = req.body;
   try {
     const users = await getUserModel("all");
     const pieChart = await generatePieChart(users);
@@ -62,7 +63,8 @@ router.get('/users', async(req, res) => {
       summaryTitle: "User Summary Report",
       summaryContent: "Total users: 100",
       headerLogoBase64,
-      headerBgBase64
+      headerBgBase64,
+      data
     });
     const pdf = await htmlToPDF(html);
 

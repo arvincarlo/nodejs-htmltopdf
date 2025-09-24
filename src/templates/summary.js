@@ -3,7 +3,8 @@ const summaryTemplate = ({
   summaryTitle = "Summary Report",
   summaryContent = "",
   headerLogoBase64 = headerLogoBase64,
-  headerBgBase64 = headerBgBase64
+  headerBgBase64 = headerBgBase64,
+  data
 }) => `
 <!DOCTYPE html>
 <html>
@@ -15,6 +16,7 @@ const summaryTemplate = ({
         margin: 0 !important;
         padding: 0 !important;
         box-sizing: border-box;
+        font-family: 'Roboto', Arial, sans-serif;
       }
       .main-wrapper {
         position: relative;
@@ -380,12 +382,12 @@ const summaryTemplate = ({
         <!-- You can place this inside your summary.js template's .summary-content-area div -->
         <div class="document-title">Portfolio Holdings Statement</div>
         <div>
-          as of April, 2024 for
+          as of ${data.month} ${data.year} for
         </div>
         <div class="summay-full-name uppercase">
-          JOHN DOE
+          ${data.accountName}
         </div>
-        <div class="flex gap-10px">
+        <div class="flex gap-10px"> 
           <div class="summary-cards">
             <div class="summay-card">
               <div class="summay-card-header flex items-center bg-primary">
