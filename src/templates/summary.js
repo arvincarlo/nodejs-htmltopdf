@@ -405,6 +405,9 @@ const summaryTemplate = ({
         height: 270px;
         object-fit: contain;
       }
+      .legend-container {
+        margin-top: 20px;
+      }
     </style>
   </head>
   <body>
@@ -432,7 +435,7 @@ const summaryTemplate = ({
                 <div class="height-full flex items-center">
                   <div>
                     <div class="currency font-weight-600">PHP</div>
-                    <div class="amount font-weight-600">600,000,000.00</div>
+                    <div class="amount font-weight-600">${formatPesos(data.totalValue)}</div>
                   </div>
                 </div>
               </div>
@@ -585,31 +588,10 @@ const summaryTemplate = ({
               <div class="legend-container">
                 <div class="font-weight-600">Currency</div>
                 <div class="flex">
-                  <div class="margin-top">
-                    <div class="legend-label flex">
-                      <div class="square-indicator php"></div>
-                      &nbsp;PHP
-                    </div>
-                    <div class="legend-label flex">
-                      <div class="square-indicator usd"></div>
-                      &nbsp;USD<sup>1</sup>
-                    </div>
-                    <div class="legend-label flex">
-                      <div class="square-indicator eur"></div>
-                      &nbsp;EUR<sup>2</sup>
-                    </div>
-                    <div class="legend-label flex">
-                      <div class="square-indicator cny"></div>
-                      &nbsp;CNY<sup>3</sup>
-                    </div>
-                    <div class="legend-label flex">
-                      <div class="square-indicator jpy"></div>
-                      &nbsp;JPY<sup>4</sup>
-                    </div>
-                  </div>
-                  <div class="flex align-center justify-center -mt-10 -ml-2">
-                    <!-- Static placeholder for DonutChart -->
-                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAYAAAD..." alt="Donut Chart" style="width:120px;height:120px;" />
+                  <div class="flex align-center justify-center -mt-6 -ml-2">
+                    <div class="pie-chart-container">
+                        <img src="${pieChart}" width="420" height="420" />
+                      </div>
                   </div>
                 </div>
                 <div class="summary-appendix-container">
