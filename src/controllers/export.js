@@ -1,11 +1,10 @@
 import express from "express";
 const router = express.Router();
 import htmlToPDF from "../helpers/html-to-pdf.js";
-import { generatePieChart, generateLineChart } from "../helpers/chartCanvas.js";
+import { generatePieChart, generateLineChart, generatePortfolioPieChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
 import soaTemplate from "../templates/soa.js";
 import summaryTemplate from '../templates/summary.js';
-import getUserModel from "../models/users.js";
 import fs from 'fs';
 
 function getBase64Image(filePath) {
@@ -52,11 +51,7 @@ router.post('/users', async(req, res) => {
   const data = req.body;
   console.log(data);
   try {
-    const users = await getUserModel("all");
-    const pieChart = await generatePieChart(users);
-    const lineChart = await generateLineChart(users);
-
-    // const html = soaTemplate(users, pieChart, lineChart);
+    const pieChart = await generatePortfolioPieChart(data);
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
     const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
@@ -103,11 +98,8 @@ router.get('/users', async(req, res) => {
   }
 
   try {
-    const users = await getUserModel("all");
-    const pieChart = await generatePieChart(users);
-    const lineChart = await generateLineChart(users);
+    const pieChart = await generatePortfolioPieChart(data);
 
-    // const html = soaTemplate(users, pieChart, lineChart);
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
     const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
