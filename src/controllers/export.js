@@ -71,7 +71,6 @@ router.post('/users', async(req, res) => {
 
     const html = summaryTemplate({
       summaryTitle: "User Summary Report",
-      summaryContent: "Total users: 100",
       headerLogoBase64,
       headerBgBase64,
       footerLogoBase64,
@@ -123,7 +122,6 @@ router.get('/users', async(req, res) => {
 
     const html = summaryTemplate({
       summaryTitle: "User Summary Report",
-      summaryContent: "Total users: 100",
       headerLogoBase64,
       headerBgBase64,
       footerLogoBase64,

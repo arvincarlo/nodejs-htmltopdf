@@ -3,10 +3,14 @@ function formatPesos(value) {
   return value.toLocaleString('en-PH', { currency: 'PHP', minimumFractionDigits: 2 });
 }
 
+function getPercentage(value, total) {
+  if (!total || isNaN(value) || isNaN(total)) return 0;
+  return Math.round((Number(value) / Number(total)) * 100);
+}
+
 const summaryTemplate = ({
   preview = false,
   summaryTitle = "Summary Report",
-  summaryContent = "",
   headerLogoBase64 = headerLogoBase64,
   headerBgBase64 = headerBgBase64,
   footerLogoBase64 = footerLogoBase64, 
@@ -23,12 +27,11 @@ const summaryTemplate = ({
         margin: 0 !important;
         padding: 0 !important;
         box-sizing: border-box;
-        font-family: 'Roboto', Arial, sans-serif;
+        font-family: 'Inter', sans-serif;
       }
       .main-wrapper {
         position: relative;
         height: auto;
-      }
       .footer-logo-fixed {
         position: fixed;
         right: 40px;
@@ -547,27 +550,27 @@ const summaryTemplate = ({
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Money Market</td>
                           <td class="text-center">${formatPesos(data.moneyMarketValue)}</td>
-                          <td class="text-center">20%</td>
+                          <td class="text-center">${getPercentage(data.moneyMarketValue, data.totalValue)}%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Fixed Income</td>
                           <td class="text-center">${formatPesos(data.fixedIncomeValue)}</td>
-                          <td class="text-center">25%</td>
+                          <td class="text-center">${getPercentage(data.fixedIncomeValue, data.totalValue)}%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Equities</td>
                           <td class="text-center">${formatPesos(data.equitiesValue)}</td>
-                          <td class="text-center">33%</td>
+                          <td class="text-center">${getPercentage(data.equitiesValue, data.totalValue)}%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
                           <td class="text-center">${formatPesos(data.structuredProductsValue)}</td>
-                          <td class="text-center">8%</td>
+                          <td class="text-center">${getPercentage(data.structuredProductsValue, data.totalValue)}%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Unit Trusts</td>
                           <td class="text-center">${formatPesos(data.unitTrustsValue)}</td>
-                          <td class="text-center">14%</td>
+                          <td class="text-center">${getPercentage(data.unitTrustsValue, data.totalValue)}%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px uppercase text-primary font-weight-600">Total</td>
