@@ -1,3 +1,8 @@
+function formatPesos(value) {
+  if (typeof value !== 'number') value = Number(value) || 0;
+  return value.toLocaleString('en-PH', { currency: 'PHP', minimumFractionDigits: 2 });
+}
+
 const summaryTemplate = ({
   preview = false,
   summaryTitle = "Summary Report",
@@ -541,32 +546,32 @@ const summaryTemplate = ({
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Money Market</td>
-                          <td class="text-center">100,000,000.00</td>
+                          <td class="text-center">${formatPesos(data.moneyMarketValue)}</td>
                           <td class="text-center">20%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Fixed Income</td>
-                          <td class="text-center">150,000,000.00</td>
+                          <td class="text-center">${formatPesos(data.fixedIncomeValue)}</td>
                           <td class="text-center">25%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Equities</td>
-                          <td class="text-center">200,000,000.00</td>
+                          <td class="text-center">${formatPesos(data.equitiesValue)}</td>
                           <td class="text-center">33%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
-                          <td class="text-center">50,000,000.00</td>
+                          <td class="text-center">${formatPesos(data.structuredProductsValue)}</td>
                           <td class="text-center">8%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Unit Trusts</td>
-                          <td class="text-center">100,000,000.00</td>
+                          <td class="text-center">${formatPesos(data.unitTrustsValue)}</td>
                           <td class="text-center">14%</td>
                         </tr>
                         <tr>
                           <td class="chart-breakdown-label padding-10px uppercase text-primary font-weight-600">Total</td>
-                          <td class="text-center">600,000,000.00</td>
+                          <td class="text-center">${formatPesos(data.totalValue)}</td>
                           <td class="text-center">100%</td>
                         </tr>
                       </tbody>

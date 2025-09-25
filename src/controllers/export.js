@@ -50,6 +50,7 @@ router.get('/health', (req, res) => {
 
 router.post('/users', async(req, res) => {
   const data = req.body;
+  console.log(data);
   try {
     const users = await getUserModel("all");
     const pieChart = await generatePieChart(users);
@@ -58,14 +59,27 @@ router.post('/users', async(req, res) => {
     // const html = soaTemplate(users, pieChart, lineChart);
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
+    const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
+
+    // Sum the values
+    const totalValue =
+      (data.unitTrustsValue || 0) +
+      (data.structuredProductsValue || 0) +
+      (data.equitiesValue || 0) +
+      (data.fixedIncomeValue || 0) +
+      (data.moneyMarketValue || 0);
 
     const html = summaryTemplate({
       summaryTitle: "User Summary Report",
       summaryContent: "Total users: 100",
       headerLogoBase64,
       headerBgBase64,
-      data,
-      pieChart
+      footerLogoBase64,
+      data: {
+        ...data,
+        totalValue,
+      },
+      pieChart,
     });
     const pdf = await htmlToPDF(html);
 
@@ -78,7 +92,17 @@ router.post('/users', async(req, res) => {
 });
 
 router.get('/users', async(req, res) => {
-  const data = req.body;
+  const data = {
+    month: 'Jun',
+    year: '2024',
+    accountName: 'Jane Peterson',
+    unitTrustsValue: 2000000,
+    structuredProductsValue: 100000,
+    equitiesValue: 800000,
+    fixedIncomeValue: 1500000,
+    moneyMarketValue: 1000000
+  }
+
   try {
     const users = await getUserModel("all");
     const pieChart = await generatePieChart(users);
@@ -89,6 +113,14 @@ router.get('/users', async(req, res) => {
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
     const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
 
+    // Sum the values
+    const totalValue =
+      (data.unitTrustsValue || 0) +
+      (data.structuredProductsValue || 0) +
+      (data.equitiesValue || 0) +
+      (data.fixedIncomeValue || 0) +
+      (data.moneyMarketValue || 0);
+
     const html = summaryTemplate({
       summaryTitle: "User Summary Report",
       summaryContent: "Total users: 100",
@@ -96,14 +128,8 @@ router.get('/users', async(req, res) => {
       headerBgBase64,
       footerLogoBase64,
       data: {
-        month: 'Jun',
-        year: '2024',
-        accountName: 'Jane Peterson',
-        unitTrustsValue: 2000000,
-        structuredProductsValue: 100000,
-        equitiesValue: 800000,
-        fixedIncomeValue: 1500000,
-        moneyMarketValue: 1000000
+        ...data,
+        totalValue
       },
       pieChart
     });
