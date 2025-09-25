@@ -22,7 +22,6 @@ const summaryTemplate = ({
       }
       .main-wrapper {
         position: relative;
-        min-height: 110vh;
         height: auto;
       }
       .footer-logo-fixed {
@@ -56,6 +55,9 @@ const summaryTemplate = ({
         overflow-y: auto;
         padding: 20px;
         box-sizing: border-box;
+      }
+      .page-break {
+        page-break-before: always;
       }
       .width-full {
         width: 100%;
@@ -616,8 +618,87 @@ const summaryTemplate = ({
             </div>
           </div>
         </div>
-        <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
       </div>
+      <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
+    </div>
+    <!-- Page 2 -->
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-logo">
+          <img src="${headerLogoBase64}" />
+        </div>
+      </div>
+      <div class="summary-content-area">
+        <div class="document-title">Page 2 Title</div>
+        <div>
+          This is page 2 content. Add your details here.
+        </div>
+      </div>
+      <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
+    </div>
+
+    <!-- Page 3 -->
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-logo">
+          <img src="${headerLogoBase64}" />
+        </div>
+      </div>
+      <div class="summary-content-area">
+        <div class="document-title">Page 3 Title</div>
+        <div>
+          This is page 3 content. Add your details here.
+        </div>
+      </div>
+      <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
+    </div>
+
+    <!-- Page 4 -->
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-logo">
+          <img src="${headerLogoBase64}" />
+        </div>
+      </div>
+      <div class="summary-content-area">
+        <div class="document-title">Page 4 Title</div>
+        <div>
+          This is page 4 content. Add your details here.
+        </div>
+      </div>
+      <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
+    </div>
+
+    <!-- Page 5 -->
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-logo">
+          <img src="${headerLogoBase64}" />
+        </div>
+      </div>
+      <div class="summary-content-area">
+        <div class="document-title">Page 5 Title</div>
+        <div>
+          This is page 5 content. Add your details here.
+        </div>
+      </div>
+      <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
+    </div>
+
+    <!-- Page 6 -->
+    <div class="main-wrapper">
+      <div class="header">
+        <div class="header-logo">
+          <img src="${headerLogoBase64}" />
+        </div>
+      </div>
+      <div class="summary-content-area">
+        <div class="document-title">Page 6 Title</div>
+        <div>
+          This is page 6 content. Add your details here.
+        </div>
+      </div>
+      <img class="footer-logo-fixed" src="${footerLogoBase64}" alt="Footer Logo" />
     </div>
   </body>
 </html>
