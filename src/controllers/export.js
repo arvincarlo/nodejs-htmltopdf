@@ -5,6 +5,7 @@ import { generatePieChart, generateLineChart, generatePortfolioPieChart } from "
 import { PrismaClient } from "@prisma/client";
 import soaTemplate from "../templates/soa.js";
 import summaryTemplate from '../templates/summary.js';
+import getFcbsDepositsByCifNumber from "../services/users.js";
 import fs from 'fs';
 
 function getBase64Image(filePath) {
@@ -52,6 +53,8 @@ router.post('/users', async(req, res) => {
   console.log(data);
   try {
     const pieChart = await generatePortfolioPieChart(data);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber);
+
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
     const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
@@ -72,6 +75,7 @@ router.post('/users', async(req, res) => {
       data: {
         ...data,
         totalValue,
+        totalBankPortfolio
       },
       pieChart,
     });
@@ -96,12 +100,14 @@ router.get('/users', async(req, res) => {
     fixedIncomeValue: 1500000,
     moneyMarketValue: 1000000,
     lastMonthAUM: 5700000,
+    cifNumber: 'R23500000'
   }
 
   console.log(data);
 
   try {
     const pieChart = await generatePortfolioPieChart(data);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber);
 
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
@@ -122,7 +128,8 @@ router.get('/users', async(req, res) => {
       footerLogoBase64,
       data: {
         ...data,
-        totalValue
+        totalValue,
+        totalBankPortfolio
       },
       pieChart
     });

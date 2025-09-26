@@ -497,7 +497,7 @@ const summaryTemplate = ({
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary">Total Bank Portfolio</td>
-                  <td>12,000,000.00</td>
+                  <td>${formatPesos(data.totalBankPortfolio)}</td>
                   <td>10,000.00</td>
                   <td>10,000.00</td>
                   <td>10,000.00</td>
