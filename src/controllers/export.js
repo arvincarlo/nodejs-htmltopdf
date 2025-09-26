@@ -94,8 +94,11 @@ router.get('/users', async(req, res) => {
     structuredProductsValue: 100000,
     equitiesValue: 800000,
     fixedIncomeValue: 1500000,
-    moneyMarketValue: 1000000
+    moneyMarketValue: 1000000,
+    lastMonthAUM: 5700000,
   }
+
+  console.log(data);
 
   try {
     const pieChart = await generatePortfolioPieChart(data);

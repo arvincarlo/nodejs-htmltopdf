@@ -8,6 +8,12 @@ function getPercentage(value, total) {
   return Math.round((Number(value) / Number(total)) * 100);
 }
 
+function getPercentageChange(total, previous) {
+  const value = (total - previous) / previous;
+  const percent = (value * 100).toFixed(2);
+  return percent;
+}
+
 const summaryTemplate = ({
   preview = false,
   summaryTitle = "Summary Report",
@@ -174,6 +180,7 @@ const summaryTemplate = ({
         white-space: nowrap;
       }
       .summary-portfolio-holdings {
+        height: 445px;
         width: 816px;
         margin-top: 28px;
         border: 1px solid #000000;
@@ -375,7 +382,7 @@ const summaryTemplate = ({
       }
       .summary-appendix-container {
         position: relative;
-        height: 150px;
+        height: 130px;
       }
       .summary-appendix {
         margin-top: 40px;
@@ -390,19 +397,18 @@ const summaryTemplate = ({
         bottom: 0;
       }
       .pie-chart-container {
-        min-width: 270px;
-        min-height: 270px;
+        min-width: 300px;
+        min-height: 300px;
         background: #f8fafc;
         border-radius: 10px;
-        padding: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
       .pie-chart-container img {
         display: block;
-        width: 270px;
-        height: 270px;
+        width: 300px;
+        height: 300px;
         object-fit: contain;
       }
       .legend-container {
@@ -445,7 +451,7 @@ const summaryTemplate = ({
               <div class="summay-card-content flex items-center border-bottom">
                 <div>
                   <div class="currency font-weight-600">PHP</div>
-                  <div class="amount font-weight-600">525,400,032.96</div>
+                  <div class="amount font-weight-600">${formatPesos(data.lastMonthAUM)}</div>
                   <div class="report-note text-primary font-weight-500">
                     *Based on last month’s report
                   </div>
@@ -457,10 +463,14 @@ const summaryTemplate = ({
               <div class="summay-card-content flex items-center">
                 <div>
                   <div class="currency font-weight-600">PHP</div>
-                  <div class="amount font-weight-600">525,400,032.96</div>
+                  <div class="amount font-weight-600">${formatPesos(data.lastMonthAUM)}</div>
                   <div class="change">
                     <div class="font-weight-600">% Change</div>
-                    <div class="font-weight-600">+9.5% &#9650;</div>
+                    <div class="font-weight-600">
+                      ${getPercentageChange(data.totalValue, data.lastMonthAUM) > 0 
+                        ? `+ ${getPercentageChange(data.totalValue, data.lastMonthAUM)}% &#9650;` 
+                        : `${getPercentageChange(data.totalValue, data.lastMonthAUM)}% &#9660;` }
+                    </div>
                   </div>
                 </div>
               </div>
