@@ -5,7 +5,7 @@ import { generatePieChart, generateLineChart, generatePortfolioPieChart } from "
 import { PrismaClient } from "@prisma/client";
 import soaTemplate from "../templates/soa.js";
 import summaryTemplate from '../templates/summary.js';
-import getFcbsDepositsByCifNumber from "../services/users.js";
+import { getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getTotalCBCSecMarketValue } from "../services/users.js";
 import fs from 'fs';
 
 function getBase64Image(filePath) {
@@ -54,6 +54,8 @@ router.post('/users', async(req, res) => {
   try {
     const pieChart = await generatePortfolioPieChart(data);
     const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
+    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
+    const totalCBCSecMarketValue = 0;
 
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
@@ -75,7 +77,9 @@ router.post('/users', async(req, res) => {
       data: {
         ...data,
         totalValue,
-        totalBankPortfolio
+        totalBankPortfolio,
+        totalTrustPortfolio,
+        totalCBCSecMarketValue
       },
       pieChart,
     });
@@ -108,6 +112,8 @@ router.get('/users', async(req, res) => {
   try {
     const pieChart = await generatePortfolioPieChart(data);
     const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month,  data.year);
+    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
+    const totalCBCSecMarketValue = 0;
 
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
@@ -129,7 +135,9 @@ router.get('/users', async(req, res) => {
       data: {
         ...data,
         totalValue,
-        totalBankPortfolio
+        totalBankPortfolio,
+        totalTrustPortfolio,
+        totalCBCSecMarketValue
       },
       pieChart
     });

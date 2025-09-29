@@ -506,7 +506,7 @@ const summaryTemplate = ({
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary">Total Trust Portfolio</td>
-                  <td>3,000,000.00</td>
+                  <td>${formatPesos(data.totalTrustPortfolio)}</td>
                   <td>5,000.00</td>
                   <td>5,000.00</td>
                   <td>5,000.00</td>
@@ -515,7 +515,7 @@ const summaryTemplate = ({
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary">Total CBC Securities Portfolio</td>
-                  <td>9,000,000.00</td>
+                  <td>${formatPesos(data.totalCBCSecMarketValue)}</td>
                   <td>13,000.00</td>
                   <td>13,000.00</td>
                   <td>13,000.00</td>
@@ -524,7 +524,7 @@ const summaryTemplate = ({
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary uppercase font-weight-700">Grand Total</td>
-                  <td>24,000,000.00</td>
+                  <td>${formatPesos(data.totalBankPortfolio + data.totalTrustPortfolio + data.totalCBCSecMarketValue)}</td>
                   <td>28,000.00</td>
                   <td>28,000.00</td>
                   <td>28,000.00</td>
