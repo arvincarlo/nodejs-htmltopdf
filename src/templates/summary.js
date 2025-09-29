@@ -29,22 +29,29 @@ const summaryTemplate = ({
     <meta charset="UTF-8">
     <title>${summaryTitle}</title>
     <style>
+      @font-face {
+        font-family: 'Roboto';
+        src: url('./fonts/Roboto-Regular.ttf') format('truetype');
+        font-weight: 400;
+      }
       html, body {
         margin: 0 !important;
         padding: 0 !important;
         box-sizing: border-box;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Roboto', Arial, Helvetica, serif;
       }
       .main-wrapper {
         position: relative;
         height: auto;
       .footer-logo-fixed {
         position: fixed;
-        right: 40px;
-        bottom: 40px;
-        width: 166.13px;
+        right: 10px;
+        bottom: 10px;
+        width: 120px;
         height: auto;
         z-index: 999;
+        margin: 0;
+        padding: 0;
       }
       .header {
         width: 100%;
@@ -390,7 +397,7 @@ const summaryTemplate = ({
         line-height: 17.26px;
       }
       .footer-logo {
-        width: 166.13px;
+        width: 100px;
         height: auto;
         position: absolute;
         right: 0;

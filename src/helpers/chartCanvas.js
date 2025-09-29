@@ -33,7 +33,7 @@ export async function generatePortfolioPieChart(data) {
   const total = values.reduce((sum, val) => sum + val, 0);
 
   const configuration = {
-    type: 'pie',
+    type: 'doughnut',
     data: {
       labels,
       datasets: [{
@@ -48,6 +48,7 @@ export async function generatePortfolioPieChart(data) {
       }]
     },
     options: {
+      cutout: '25%',
       plugins: {
         legend: { position: 'bottom' },
         datalabels: {
