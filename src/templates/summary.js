@@ -50,8 +50,8 @@ const summaryTemplate = ({
         width: 120px;
         height: auto;
         z-index: 999;
-        margin: 0;
-        padding: 0;
+        margin: 10;
+        padding: 10;
       }
       .header {
         width: 100%;
@@ -500,12 +500,10 @@ const summaryTemplate = ({
                   <td class="text-primary">EUR<sup>2</sup></td>
                   <td class="text-primary">CNY<sup>3</sup></td>
                   <td class="text-primary">JPY<sup>4</sup></td>
-                  <td class="text-primary">Others</td>
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary">Total Bank Portfolio</td>
                   <td>${formatPesos(data.totalBankPortfolio)}</td>
-                  <td>10,000.00</td>
                   <td>10,000.00</td>
                   <td>10,000.00</td>
                   <td>10,000.00</td>
@@ -518,7 +516,6 @@ const summaryTemplate = ({
                   <td>5,000.00</td>
                   <td>5,000.00</td>
                   <td>5,000.00</td>
-                  <td>5,000.00</td>
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary">Total CBC Securities Portfolio</td>
@@ -527,12 +524,10 @@ const summaryTemplate = ({
                   <td>13,000.00</td>
                   <td>13,000.00</td>
                   <td>13,000.00</td>
-                  <td>13,000.00</td>
                 </tr>
                 <tr>
                   <td class="summary-table-label text-primary uppercase font-weight-700">Grand Total</td>
                   <td>${formatPesos(data.totalBankPortfolio + data.totalTrustPortfolio + data.totalCBCSecMarketValue)}</td>
-                  <td>28,000.00</td>
                   <td>28,000.00</td>
                   <td>28,000.00</td>
                   <td>28,000.00</td>
