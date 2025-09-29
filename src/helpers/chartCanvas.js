@@ -88,7 +88,15 @@ export async function generatePieChart(users) {
     },
     options: {
       plugins: {
-        legend: { position: 'bottom' },
+        legend: { 
+          position: "bottom",
+          labels: {
+            font: {
+              size: 32,
+              weight: 'bold'
+            }
+          }
+        },
         datalabels: {
           color: '#fff',
           font: { weight: 'bold', size: 22 }, // Make label bigger

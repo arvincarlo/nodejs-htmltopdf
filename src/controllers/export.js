@@ -53,7 +53,7 @@ router.post('/users', async(req, res) => {
   console.log(data);
   try {
     const pieChart = await generatePortfolioPieChart(data);
-    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
 
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
@@ -91,7 +91,7 @@ router.post('/users', async(req, res) => {
 
 router.get('/users', async(req, res) => {
   const data = {
-    month: 'Jun',
+    month: 'Nov',
     year: '2024',
     accountName: 'Jane Peterson',
     unitTrustsValue: 2000000,
@@ -107,7 +107,7 @@ router.get('/users', async(req, res) => {
 
   try {
     const pieChart = await generatePortfolioPieChart(data);
-    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month,  data.year);
 
     const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
     const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
