@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
     // Create the Pie chart image
     const pieChart = await generatePieChart(users);
     const lineChart = await generateLineChart(users);
-    
+
     const html = soaTemplate(users, pieChart, lineChart);
     const pdf = await htmlToPDF(html);
     res.contentType('application/pdf');
@@ -48,7 +48,7 @@ router.get('/health', (req, res) => {
   });
 });
 
-router.post('/users', async(req, res) => {
+router.post('/users', async (req, res) => {
   const data = req.body;
   console.log(data);
   try {
@@ -57,9 +57,15 @@ router.post('/users', async(req, res) => {
     const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
     const totalCBCSecMarketValue = 0;
 
-    const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
-    const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
-    const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
+    const headerLogoBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'header-logo.png')
+    );
+    const headerBgBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'header-bg.png')
+    );
+    const footerLogoBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
+    );
 
     // Sum the values
     const totalValue =
@@ -87,13 +93,13 @@ router.post('/users', async(req, res) => {
 
     res.contentType('application/pdf');
     res.send(pdf);
-  } catch(error) {
+  } catch (error) {
     console.error('Error fetching the users: ', error);
     res.status(500).send('No users found.');
   }
 });
 
-router.get('/users', async(req, res) => {
+router.get('/users', async (req, res) => {
   const data = {
     month: 'Nov',
     year: '2024',
@@ -111,7 +117,7 @@ router.get('/users', async(req, res) => {
 
   try {
     const pieChart = await generatePortfolioPieChart(data);
-    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month,  data.year);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
     const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
     const totalCBCSecMarketValue = 0;
 
@@ -145,7 +151,7 @@ router.get('/users', async(req, res) => {
 
     res.contentType('application/pdf');
     res.send(pdf);
-  } catch(error) {
+  } catch (error) {
     console.error('Error fetching the users: ', error);
     res.status(500).send('No users found.');
   }
