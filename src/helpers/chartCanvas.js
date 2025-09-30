@@ -39,11 +39,11 @@ export async function generatePortfolioPieChart(data) {
       datasets: [{
         data: values,
         backgroundColor: [
-          '#d32f2f', // Unit Trusts
-          '#1976d2', // Structured Products
-          '#388e3c', // Equities
-          '#7b1fa2',  // Money Market
-          '#fbc02d', // Fixed Income
+          '#b71c1c', // very dark red
+          '#c62828', // dark red
+          '#e53935', // medium red
+          '#f44336', // bright red
+          '#ff8a80', // pale/light red
         ]
       }]
     },

@@ -31,7 +31,7 @@ const summaryTemplate = ({
     <style>
       @font-face {
         font-family: 'Roboto';
-        src: url('./fonts/Roboto-Regular.ttf') format('truetype');
+        src: url('file:///d:/my_projects/node_pdf/public/fonts/Roboto-Regular.ttf') format('truetype');
         font-weight: 400;
       }
       html, body {
