@@ -389,10 +389,10 @@ const summaryTemplate = ({
       }
       .summary-appendix-container {
         position: relative;
-        height: 130px;
+        height: 100px;
+        margin-top: 20px;
       }
       .summary-appendix {
-        margin-top: 40px;
         font-size: 11.51px;
         line-height: 17.26px;
       }
@@ -420,6 +420,14 @@ const summaryTemplate = ({
       }
       .legend-container {
         margin-top: 20px;
+      }
+      .currency-section {
+        border: 2px solid #000;
+        border-radius: 10px;
+        background: #fff;
+        display: inline-block;
+        margin-top: 10px;
+        padding: 5px;
       }
     </style>
   </head>
@@ -598,12 +606,14 @@ const summaryTemplate = ({
                 </div>
               </div>
               <div class="legend-container">
-                <div class="font-weight-600">Currency</div>
-                <div class="flex">
-                  <div class="flex align-center justify-center -mt-6 -ml-2">
-                    <div class="pie-chart-container">
-                        <img src="${pieChart}" width="420" height="420" />
-                      </div>
+                <div class="currency-section">
+                  <div class="font-weight-600">Currency</div>
+                  <div class="flex">
+                    <div class="flex align-center justify-center -mt-6 -ml-2">
+                      <div class="pie-chart-container">
+                          <img src="${pieChart}" width="420" height="420" />
+                        </div>
+                    </div>
                   </div>
                 </div>
                 <div class="summary-appendix-container">
