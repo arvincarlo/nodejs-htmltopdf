@@ -7,6 +7,7 @@ import soaTemplate from "../templates/soa.js";
 import summaryTemplate from '../templates/summary.js';
 import { getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getTotalCBCSecMarketValue } from "../services/users.js";
 import fs from 'fs';
+import path from 'path';
 
 function getBase64Image(filePath) {
   const image = fs.readFileSync(filePath);
@@ -110,7 +111,8 @@ router.get('/users', async (req, res) => {
     fixedIncomeValue: 1500000,
     moneyMarketValue: 1000000,
     lastMonthAUM: 5700000,
-    cifNumber: 'R23500000'
+    cifNumber: 'R23500000',
+    fullName: 'Jane Doe Perterson'
   }
 
   console.log(data);
@@ -121,9 +123,15 @@ router.get('/users', async (req, res) => {
     const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
     const totalCBCSecMarketValue = 0;
 
-    const headerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-logo.png');
-    const headerBgBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/header-bg.png');
-    const footerLogoBase64 = getBase64Image('d:/my_projects/node_pdf/public/images/footer-logo.png');
+    const headerLogoBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'header-logo.png')
+    );
+    const headerBgBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'header-bg.png')
+    );
+    const footerLogoBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
+    );
 
     // Sum the values
     const totalValue =
