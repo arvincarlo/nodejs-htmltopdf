@@ -10,6 +10,18 @@ const config = {
   }
 }
 
+/**
+ * Retrieves the total available balance from FcbsDeposits for a given cifNumber, month, and year,
+ * and adds the total principal amount from FcbsTimeDeposits for the same cifNumber.
+ *
+ * @param {string} cifNumber - The CIF number to filter records.
+ * @param {string} month - The short month name (e.g., 'Jan', 'Feb', 'Mar').
+ * @param {string|number} year - The year (e.g., '2024' or 2024).
+ * @returns {Promise<number>} The sum of availableBalance (for the given month/year) and principalAmount (all time) for the cifNumber.
+ *
+ * Example usage:
+ *   const total = await getFcbsDepositsByCifNumber('R23500000', 'Nov', 2024);
+ */
 export async function getFcbsDepositsByCifNumber(cifNumber, month, year) {
   try {
     await sql.connect(config);
@@ -42,10 +54,6 @@ export async function getFcbsDepositsByCifNumber(cifNumber, month, year) {
     console.log(result);
     await sql.close();
 
-    // Return the totalCurrentBalance value directly
-    // return result.recordset || []; // recordset
-    // return result.recordset[0]?.totalAvailableBalance || 0;
-
     const row = result.recordset[0] || {};
     // Return the sum of availableBalance and principalAmount
     return (row.totalAvailableBalance || 0) + (row.totalPrincipalAmount || 0);
@@ -65,15 +73,10 @@ export async function getTotalTrustPortfolio(cifNumber) {
     await sql.connect(config);
     const query = `
       SELECT
-        ISNULL(SUM(tfi.faceAmount), 0) AS totalFixedIncome,
-        ISNULL(SUM(teq.purchaseAmount), 0) AS totalEquities,
-        ISNULL(SUM(tuitf.purchaseAmount), 0) AS totalUitf
-      FROM TrustFixedIncome tfi
-      LEFT JOIN TrustEquities teq ON teq.cifNumber = tfi.cifNumber
-      LEFT JOIN TrustUitf tuitf ON tuitf.cifNumber = tfi.cifNumber
-      WHERE tfi.cifNumber = @cifNumber
-        OR teq.cifNumber = @cifNumber
-        OR tuitf.cifNumber = @cifNumber
+        ISNULL((SELECT SUM(faceAmount) FROM TrustFixedIncome WHERE cifNumber = @cifNumber), 0) AS totalFixedIncome,
+        ISNULL((SELECT SUM(purchaseAmount) FROM TrustEquities WHERE cifNumber = @cifNumber), 0) AS totalEquities,
+        ISNULL((SELECT SUM(purchaseAmount) FROM TrustUitf WHERE cifNumber = @cifNumber), 0) AS totalUitf,
+        ISNULL((SELECT SUM(principalAmount) FROM TrustDeposits WHERE cifNumber = @cifNumber), 0) AS totalDeposits
     `;
     const request = new sql.Request();
     request.input('cifNumber', sql.VarChar, cifNumber);
@@ -81,8 +84,15 @@ export async function getTotalTrustPortfolio(cifNumber) {
     await sql.close();
 
     const row = result.recordset[0] || {};
-    // Sum all three fields for the total
-    return (row.totalFixedIncome || 0) + (row.totalEquities || 0) + (row.totalUitf || 0);
+    console.log(row);
+
+    // Sum all fields for the total
+    return (
+      (row.totalDeposits || 0) +
+      (row.totalFixedIncome || 0) +
+      (row.totalEquities || 0) +
+      (row.totalUitf || 0)
+    );
   } catch (error) {
     console.error('SQL error:', error);
     return 0;
