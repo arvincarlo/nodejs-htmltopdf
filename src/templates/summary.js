@@ -444,7 +444,7 @@ const summaryTemplate = ({
           as of ${data.month} ${data.year} for
         </div>
         <div class="summay-full-name uppercase">
-          ${data.fullName}
+          ${data.accountName}
         </div>
         <div class="flex gap-10px"> 
           <div class="summary-cards">

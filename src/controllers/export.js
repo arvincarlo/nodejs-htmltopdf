@@ -112,7 +112,6 @@ router.get('/users', async (req, res) => {
     moneyMarketValue: 1000000,
     lastMonthAUM: 5700000,
     cifNumber: 'R23500000',
-    fullName: 'Jane Doe Perterson'
   }
 
   console.log(data);
