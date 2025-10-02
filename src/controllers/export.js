@@ -11,6 +11,7 @@ import path from 'path';
 // Pages
 import page1 from '../templates/soa/page1.js';
 import page2 from '../templates/soa/page2.js';
+import page3 from '../templates/soa/page3.js';
 
 function getBase64Image(filePath) {
   const image = fs.readFileSync(filePath);
@@ -125,6 +126,7 @@ router.get('/users', async (req, res) => {
     const pages = [
       { component: page1, props: { ...data, portfolioPieChart, totalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
       { component: page2, props: { ...data, extraField: 'value2' } },
+      { component: page3 },
       // Add more pages as needed
     ];
 
