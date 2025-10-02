@@ -3,11 +3,14 @@ const router = express.Router();
 import htmlToPDF from "../helpers/html-to-pdf.js";
 import { generatePieChart, generateLineChart, generatePortfolioPieChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
-import soaTemplate from "../templates/soa.js";
-import summaryTemplate from '../templates/summary.js';
+import summaryTemplate from '../templates/soa/template.js';
 import { getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getTotalCBCSecMarketValue } from "../services/users.js";
 import fs from 'fs';
 import path from 'path';
+
+// Pages
+import page1 from '../templates/soa/page1.js';
+import page2 from '../templates/soa/page2.js';
 
 function getBase64Image(filePath) {
   const image = fs.readFileSync(filePath);
@@ -16,29 +19,6 @@ function getBase64Image(filePath) {
 }
 
 const prisma = new PrismaClient();
-
-router.post('/', async (req, res) => {
-  try {
-    const { role } = req.body;
-    if (!role) return res.status(400).send("Role is required");
-
-    const users = (role == "all") ? await prisma.userDetailsModel.findMany() : await prisma.userDetailsModel.findMany({ where: { role } });
-
-    if (!users || users.length === 0) return res.status(404).send('No users found');
-
-    // Create the Pie chart image
-    const pieChart = await generatePieChart(users);
-    const lineChart = await generateLineChart(users);
-
-    const html = soaTemplate(users, pieChart, lineChart);
-    const pdf = await htmlToPDF(html);
-    res.contentType('application/pdf');
-    res.send(pdf);
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
 
 router.get('/health', (req, res) => {
   const now = new Date();
@@ -114,13 +94,14 @@ router.get('/users', async (req, res) => {
     cifNumber: 'R23500000',
   }
 
-  console.log(data);
+  console.log("data in export: ", data);
 
   try {
-    const pieChart = await generatePortfolioPieChart(data);
+    const portfolioPieChart = await generatePortfolioPieChart(data);
     const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
     const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
     const totalCBCSecMarketValue = 0;
+    // const totalCBCSecMarketValue = getTotalCBCSecMarketValue();
 
     const headerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'header-logo.png')
@@ -140,19 +121,20 @@ router.get('/users', async (req, res) => {
       (data.fixedIncomeValue || 0) +
       (data.moneyMarketValue || 0);
 
+    // ... Pages definition
+    const pages = [
+      { component: page1, props: { ...data, portfolioPieChart, totalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
+      { component: page2, props: { ...data, extraField: 'value2' } },
+      // Add more pages as needed
+    ];
+
     const html = summaryTemplate({
-      summaryTitle: "User Summary Report",
+      summaryTitle: "WMG SOA Report",
       headerLogoBase64,
       headerBgBase64,
       footerLogoBase64,
-      data: {
-        ...data,
-        totalValue,
-        totalBankPortfolio,
-        totalTrustPortfolio,
-        totalCBCSecMarketValue
-      },
-      pieChart
+      pages,
+      preview: false,
     });
     const pdf = await htmlToPDF(html);
 
