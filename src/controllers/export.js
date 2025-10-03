@@ -12,6 +12,17 @@ import path from 'path';
 import page1 from '../templates/soa/page1.js';
 import page2 from '../templates/soa/page2.js';
 import page3 from '../templates/soa/page3.js';
+import page4 from '../templates/soa/page4.js';
+import page5 from '../templates/soa/page5.js';
+import page6 from '../templates/soa/page6.js';
+import page7 from '../templates/soa/page7.js';
+import page8 from '../templates/soa/page8.js';
+import page9 from '../templates/soa/page9.js';
+import page10 from '../templates/soa/page10.js';
+import page11 from '../templates/soa/page11.js';
+import page12 from '../templates/soa/page12.js';
+import page13 from '../templates/soa/page13.js';
+import page14 from '../templates/soa/page14.js';
 
 function getBase64Image(filePath) {
   const image = fs.readFileSync(filePath);
@@ -127,7 +138,17 @@ router.get('/users', async (req, res) => {
       { component: page1, props: { ...data, portfolioPieChart, totalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
       { component: page2, props: { ...data, extraField: 'value2' } },
       { component: page3 },
-      // Add more pages as needed
+      { component: page4 },
+      { component: page5 },
+      { component: page6 },
+      { component: page7 },
+      { component: page8 },
+      { component: page9 },
+      { component: page10 },
+      { component: page11 },
+      { component: page12 },
+      { component: page13 },
+      { component: page14 },
     ];
 
     const html = summaryTemplate({

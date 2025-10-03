@@ -4,6 +4,7 @@ export default (props) => `
   </div>
 
   <div style="padding:12px; background:white;">
+    <h2 style="font-size:18px; font-weight:bold; margin-bottom:8px;">Deposits</h2>
     <div style="border:1px solid #000; border-radius:8px; padding:8px; margin-bottom:16px; margin-top:8px;">
       <table style="width:60%; font-size:14px;">
         <thead>
