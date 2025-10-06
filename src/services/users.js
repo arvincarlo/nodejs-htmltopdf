@@ -123,3 +123,56 @@ export async function getTotalCBCSecMarketValue(cifNumber) {
     return 0;
   }
 }
+
+/**
+ * Retrieves all deposit records for a given CIF number, month, and year from the FcbsDeposits table.
+ *
+ * @param {string} cifNumber - The CIF number to filter records.
+ * @param {string} month - The short month name (e.g., 'Jan', 'Feb', 'Mar').
+ * @param {string|number} year - The year (e.g., '2024' or 2024).
+ * @returns {Promise<Array>} An array of deposit records, each containing:
+ *   - accountName
+ *   - branch
+ *   - productDescription
+ *   - referenceNumber
+ *   - currentBalance
+ *   - availableBalance
+ *
+ * Example usage:
+ *   const deposits = await getAllDeposits('R23500000', 'Jun', 2024);
+ */
+export async function getAllDeposits(cifNumber, month, year) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT
+        [accountName],
+        [branch],
+        [productDescription],
+        [referenceNumber],
+        [currentBalance],
+        [availableBalance]
+      FROM [WealthAppDB1.0].[dbo].[FcbsDeposits]
+      WHERE [cifNumber] = @cifNumber
+        AND MONTH([dateCovered]) = @monthNum
+        AND YEAR([dateCovered]) = @yearNum
+    `;
+
+    // Convert month shortname to month number (jun -> 6)
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
+    const request = new sql.Request();
+
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.VarChar, monthNum);
+    request.input('yearNum', sql.VarChar, yearNum);
+
+    const result = await request.query(query); 
+    await sql.close();
+
+    return result.recordset;
+  }  catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}

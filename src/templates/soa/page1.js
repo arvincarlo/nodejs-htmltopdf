@@ -1,14 +1,29 @@
 import { formatPesos, getPercentage, getPercentageChange } from '../../helpers/utils.js';
 
-export default (props) => {
+export default ({
+  month,
+  year,
+  accountName,
+  totalValue,
+  lastMonthAUM,
+  totalBankPortfolio,
+  totalTrustPortfolio,
+  totalCBCSecMarketValue,
+  moneyMarketValue,
+  fixedIncomeValue,
+  equitiesValue,
+  structuredProductsValue,
+  unitTrustsValue,
+  portfolioPieChart
+}) => {
   return `
     <div style="padding: 32px;">
       <div class="document-title">Portfolio Holdings Statement</div>
       <div>
-        as of ${props.month} ${props.year} for
+        as of ${month} ${year} for
       </div>
       <div class="summay-full-name uppercase">
-        ${props.accountName}
+        ${accountName}
       </div>
       <div class="flex gap-10px"> 
         <div class="summary-cards">
@@ -20,7 +35,7 @@ export default (props) => {
               <div class="height-full flex items-center">
                 <div>
                   <div class="currency font-weight-600">PHP</div>
-                  <div class="amount font-weight-600">${formatPesos(props.totalValue)}</div>
+                  <div class="amount font-weight-600">${formatPesos(totalValue)}</div>
                 </div>
               </div>
             </div>
@@ -30,7 +45,7 @@ export default (props) => {
             <div class="summay-card-content flex items-center border-bottom">
               <div>
                 <div class="currency font-weight-600">PHP</div>
-                <div class="amount font-weight-600">${formatPesos(props.lastMonthAUM)}</div>
+                <div class="amount font-weight-600">${formatPesos(lastMonthAUM)}</div>
                 <div class="report-note text-primary font-weight-500">
                   *Based on last month’s report
                 </div>
@@ -42,13 +57,13 @@ export default (props) => {
             <div class="summay-card-content flex items-center">
               <div>
                 <div class="currency font-weight-600">PHP</div>
-                <div class="amount font-weight-600">${formatPesos(props.lastMonthAUM)}</div>
+                <div class="amount font-weight-600">${formatPesos(lastMonthAUM)}</div>
                 <div class="change">
                   <div class="font-weight-600">% Change</div>
                   <div class="font-weight-600">
-                    ${getPercentageChange(props.totalValue, props.lastMonthAUM) > 0 
-                      ? `+ ${getPercentageChange(props.totalValue, props.lastMonthAUM)}% &#9650;` 
-                      : `${getPercentageChange(props.totalValue, props.lastMonthAUM)}% &#9660;` }
+                    ${getPercentageChange(totalValue, lastMonthAUM) > 0 
+                      ? `+ ${getPercentageChange(totalValue, lastMonthAUM)}% &#9650;` 
+                      : `${getPercentageChange(totalValue, lastMonthAUM)}% &#9660;` }
                   </div>
                 </div>
               </div>
@@ -75,7 +90,7 @@ export default (props) => {
               </tr>
               <tr>
                 <td class="summary-table-label text-primary">Total Bank Portfolio</td>
-                <td>${formatPesos(props.totalBankPortfolio)}</td>
+                <td>${formatPesos(totalBankPortfolio)}</td>
                 <td>10,000.00</td>
                 <td>10,000.00</td>
                 <td>10,000.00</td>
@@ -83,7 +98,7 @@ export default (props) => {
               </tr>
               <tr>
                 <td class="summary-table-label text-primary">Total Trust Portfolio</td>
-                <td>${formatPesos(props.totalTrustPortfolio)}</td>
+                <td>${formatPesos(totalTrustPortfolio)}</td>
                 <td>5,000.00</td>
                 <td>5,000.00</td>
                 <td>5,000.00</td>
@@ -91,7 +106,7 @@ export default (props) => {
               </tr>
               <tr>
                 <td class="summary-table-label text-primary">Total CBC Securities Portfolio</td>
-                <td>${formatPesos(props.totalCBCSecMarketValue)}</td>
+                <td>${formatPesos(totalCBCSecMarketValue)}</td>
                 <td>13,000.00</td>
                 <td>13,000.00</td>
                 <td>13,000.00</td>
@@ -99,7 +114,7 @@ export default (props) => {
               </tr>
               <tr>
                 <td class="summary-table-label text-primary uppercase font-weight-700">Grand Total</td>
-                <td>${formatPesos(props.totalBankPortfolio + props.totalTrustPortfolio + props.totalCBCSecMarketValue)}</td>
+                <td>${formatPesos(totalBankPortfolio + totalTrustPortfolio + totalCBCSecMarketValue)}</td>
                 <td>28,000.00</td>
                 <td>28,000.00</td>
                 <td>28,000.00</td>
@@ -116,7 +131,7 @@ export default (props) => {
                   </div>
                   <div class="flex align-center justify-center">
                     <div class="pie-chart-container">
-                      <img src="${props.portfolioPieChart}" alt="Portfolio Pie Chart" width="420" height="420" />
+                      <img src="${portfolioPieChart}" alt="Portfolio Pie Chart" width="420" height="420" />
                     </div>
                   </div>
                 </div>
@@ -136,32 +151,32 @@ export default (props) => {
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Money Market</td>
-                        <td class="text-center">${formatPesos(props.moneyMarketValue)}</td>
-                        <td class="text-center">${getPercentage(props.moneyMarketValue, props.totalValue)}%</td>
+                        <td class="text-center">${formatPesos(moneyMarketValue)}</td>
+                        <td class="text-center">${getPercentage(moneyMarketValue, totalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Fixed Income</td>
-                        <td class="text-center">${formatPesos(props.fixedIncomeValue)}</td>
-                        <td class="text-center">${getPercentage(props.fixedIncomeValue, props.totalValue)}%</td>
+                        <td class="text-center">${formatPesos(fixedIncomeValue)}</td>
+                        <td class="text-center">${getPercentage(fixedIncomeValue, totalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Equities</td>
-                        <td class="text-center">${formatPesos(props.equitiesValue)}</td>
-                        <td class="text-center">${getPercentage(props.equitiesValue, props.totalValue)}%</td>
+                        <td class="text-center">${formatPesos(equitiesValue)}</td>
+                        <td class="text-center">${getPercentage(equitiesValue, totalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
-                        <td class="text-center">${formatPesos(props.structuredProductsValue)}</td>
-                        <td class="text-center">${getPercentage(props.structuredProductsValue, props.totalValue)}%</td>
+                        <td class="text-center">${formatPesos(structuredProductsValue)}</td>
+                        <td class="text-center">${getPercentage(structuredProductsValue, totalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Unit Trusts</td>
-                        <td class="text-center">${formatPesos(props.unitTrustsValue)}</td>
-                        <td class="text-center">${getPercentage(props.unitTrustsValue, props.totalValue)}%</td>
+                        <td class="text-center">${formatPesos(unitTrustsValue)}</td>
+                        <td class="text-center">${getPercentage(unitTrustsValue, totalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px uppercase text-primary font-weight-600">Total</td>
-                        <td class="text-center">${formatPesos(props.totalValue)}</td>
+                        <td class="text-center">${formatPesos(totalValue)}</td>
                         <td class="text-center">100%</td>
                       </tr>
                     </tbody>
@@ -175,7 +190,7 @@ export default (props) => {
                 <div class="flex">
                   <div class="flex align-center justify-center -mt-6 -ml-2">
                     <div class="pie-chart-container">
-                        <img src="${props.portfolioPieChart}" alt="Portfolio Pie Chart" width="420" height="420" />
+                        <img src="${portfolioPieChart}" alt="Portfolio Pie Chart" width="420" height="420" />
                       </div>
                   </div>
                 </div>
@@ -197,4 +212,3 @@ export default (props) => {
     </div>
   `
 }
-

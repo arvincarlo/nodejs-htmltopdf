@@ -1,4 +1,6 @@
-export default (props) => `
+import { formatPesos } from '../../helpers/utils.js';
+
+export default ({totalDeposits}) => `
   <div class="page-header">
     <span>Bank Portfolio</span>
   </div>
@@ -6,53 +8,39 @@ export default (props) => `
   <div class="content-section">
     <h2 style="font-size:18px; font-weight:bold; margin-bottom:8px;">Deposits</h2>
     <div style="border:1px solid #000; border-radius:8px; padding:8px; margin-bottom:16px; margin-top:8px;">
-      <table style="width:60%; font-size:14px;">
+      <table class="center-table" style="width:60%; font-size:14px;">
         <thead>
           <tr>
-            <th style="text-align:left; padding:4px;">Account Name</th>
-            <th style="text-align:left; padding:4px;">Branch</th>
-            <th style="text-align:left; padding:4px;">Product Description</th>
-            <th style="text-align:left; padding:4px;">Account / Reference No.</th>
-            <th style="text-align:right; padding:4px;">Current Balance</th>
-            <th style="text-align:right; padding:4px;">Available Balance</th>
+            <th style="padding:4px;">Account Name</th>
+            <th style="padding:4px;">Branch</th>
+            <th style="padding:4px;">Product Description</th>
+            <th style="padding:4px;">Account / Reference No.</th>
+            <th style="padding:4px;">Current Balance</th>
+            <th style="padding:4px;">Available Balance</th>
           </tr>
         </thead>
         <tbody style="font-size:14px;">
           <!-- PHP Section -->
           <tr>
-            <td colspan="6" style="padding:4px; font-weight:bold;">PHP</td>
+            <td colspan="6" style="padding:4px; font-weight:bold; text-align:left;">PHP</td>
           </tr>
-          <tr>
-            <td>XXX</td>
-            <td>Makati Main</td>
-            <td>Checking</td>
-            <td>111111</td>
-            <td style="text-align:right;">2.00</td>
-            <td style="text-align:right;">2.00</td>
-          </tr>
-          <tr>
-            <td>XXX</td>
-            <td>Makati Main</td>
-            <td>Savings</td>
-            <td>111111</td>
-            <td style="text-align:right;">3.00</td>
-            <td style="text-align:right;">3.00</td>
-          </tr>
-          <tr>
-            <td>XXX</td>
-            <td>Makati Main</td>
-            <td>Savings</td>
-            <td>111111</td>
-            <td style="text-align:right;">4.00</td>
-            <td style="text-align:right;">4.00</td>
-          </tr>
+          ${totalDeposits.map(item => (
+            `<tr>
+              <td>${item.accountName || ""}</td>
+              <td>${item.branch || ""}</td>
+              <td>${item.productDescription || ""}</td>
+              <td>${item.referenceNumber || ""}</td>
+              <td>${formatPesos(item.currentBalance) || ""}</td>
+              <td>${formatPesos(item.availableBalance) || ""}</td>
+            </tr>`
+          )).join('')}
           <tr>
             <td></td>
             <td></td>
             <td></td>
             <td style="background:#fff9e6; font-weight:bold;">TOTAL</td>
-            <td style="background:#fff9e6; text-align:right; font-weight:bold;">14.00</td>
-            <td style="background:#fff9e6; text-align:right; font-weight:bold;">14.00</td>
+            <td style="background:#fff9e6; font-weight:bold;">14.00</td>
+            <td style="background:#fff9e6; font-weight:bold;">14.00</td>
           </tr>
           <!-- USD Section -->
           <tr>

@@ -4,7 +4,7 @@ import htmlToPDF from "../helpers/html-to-pdf.js";
 import { generatePieChart, generateLineChart, generatePortfolioPieChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
 import summaryTemplate from '../templates/soa/template.js';
-import { getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getTotalCBCSecMarketValue } from "../services/users.js";
+import { getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getAllDeposits } from "../services/users.js";
 import fs from 'fs';
 import path from 'path';
 
@@ -148,10 +148,13 @@ router.get('/users', async (req, res) => {
       (data.fixedIncomeValue || 0) +
       (data.moneyMarketValue || 0);
 
+    // GET deposits
+    const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
+
     // ... Pages definition
     const pages = [
       { component: page1, props: { ...data, portfolioPieChart, totalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
-      { component: page2, props: { ...data, extraField: 'value2' } },
+      { component: page2, props: { totalDeposits } },
       { component: page3 },
       { component: page4 },
       { component: page5 },

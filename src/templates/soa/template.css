@@ -409,3 +409,8 @@ html, body {
   margin-top: 10px;
   padding: 5px;
 }
+.center-table td,
+.center-table th {
+  text-align: center;
+  padding: 4px;
+}
