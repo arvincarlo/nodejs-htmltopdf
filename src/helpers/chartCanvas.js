@@ -44,11 +44,13 @@ export async function generatePortfolioPieChart(data) {
           '#e53935', // medium red
           '#f44336', // bright red
           '#ff8a80', // pale/light red
-        ]
+        ],
+        borderColor: '#000', // Add black border
+        borderWidth: 2        // Set border width
       }]
     },
     options: {
-      cutout: '25%',
+      cutout: '35%',
       plugins: {
         legend: { position: 'bottom' },
         datalabels: {

@@ -1,9 +1,9 @@
 export default (props) => `
-  <div style="background:#630003; margin-top:16px; font-size:24px; font-weight:bold; color:white; width:100%; box-sizing:border-box;">
+  <div class="page-header">
     <span>Cash Transaction History</span>
   </div>
 
-  <div style="padding:16px;">
+  <div class="content-section">
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px;">
       <div>
         <div style="font-weight:bold;">Account Name:</div>

@@ -1,9 +1,9 @@
 export default (props) => `
-  <div style="background:#630003; margin-top:16px; font-size:24px; font-weight:bold; color:white; width:100%; box-sizing:border-box;">
+  <div class="page-header">
     <span>Trust Portfolio</span>
   </div>
 
-  <div style="padding:16px;">
+  <div class="content-section">
     <!-- PESO Deposits Section -->
     <div style="margin-bottom:24px;">
       <h2 style="font-size:18px; font-weight:bold; margin-bottom:12px;">PESO Deposits</h2>

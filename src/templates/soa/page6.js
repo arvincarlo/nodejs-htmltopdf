@@ -1,9 +1,9 @@
 export default (props) => `
-  <div style="background:#630003; margin-top:16px; font-size:24px; font-weight:bold; color:white; width:100%; box-sizing:border-box;">
+  <div class="page-header">
     <span>Bank Portfolio</span>
   </div>
 
-  <div style="padding:16px;">
+  <div class="content-section">
     <h2 style="font-size:18px; font-weight:bold; margin-bottom:12px;">Structured Products</h2>
 
     <!-- Premium Yield Advantage (PYA) Section -->

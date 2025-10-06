@@ -1,8 +1,8 @@
 export default (props) => `
-  <div style="background:#630003; padding-left:16px; padding-top:8px; padding-bottom:8px; margin-top:16px; font-size:24px; font-weight:bold; color:white;">
+  <div class="page-header">
     <span>Bank Portfolio</span>
   </div>
-  <div style="padding:12px; background:white;">
+  <div class="content-section">
     <!-- Fixed Income Section -->
     <div>
       <h2 style="font-size:18px; font-weight:bold; margin-bottom:8px;">Fixed Income</h2>
