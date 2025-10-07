@@ -1,6 +1,6 @@
 import { formatPesos, formatDateToShort } from '../../helpers/utils.js';
 
-export default ({ trasactionHistory }) => `
+export default ({ transactionHistory }) => `
   <div class="page-header">
     <span>Cash Transaction History</span>
   </div>
@@ -8,13 +8,13 @@ export default ({ trasactionHistory }) => `
   <div class="content-section">
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px;">
       <div>
-        <div style="font-weight:bold;">Account Name:</div>
-        <div style="font-weight:bold;">Account Number:</div>
+        <div style="font-weight:bold;">Account Name: ${transactionHistory[0]?.accountName || ''}</div>
+        <div style="font-weight:bold;">Account Number: ${transactionHistory[0]?.accountNumber || ''}</div>
       </div>
       <div>
         <div>
           <span style="font-weight:bold;">Beginning Balance:</span>
-          <span style="background:#FFFFE0; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+          <span style="background:#FFFFE0; height:20px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
         </div>
         <div>
           <span style="font-weight:bold;">Closing Balance:</span>
@@ -48,7 +48,7 @@ export default ({ trasactionHistory }) => `
             </tr>
           </thead>
           <tbody>
-            ${trasactionHistory.map(item => `
+            ${transactionHistory.map(item => `
               <tr style="border-bottom:10px solid black;">
                 <td>${formatDateToShort(item.transDateValueDate)}</td>
                 <td>${item.productDescription}</td>
@@ -61,7 +61,7 @@ export default ({ trasactionHistory }) => `
               <td></td>
               <td></td>
               <td class="highlight">TOTAL</td>
-              <td class="highlight">${formatPesos(trasactionHistory.reduce((sum, item) => sum + (item.credit || 0), 0))}</td>
+              <td class="highlight">${formatPesos(transactionHistory.reduce((sum, item) => sum + (item.credit || 0), 0))}</td>
               <td></td>
             </tr>
           </tbody>
