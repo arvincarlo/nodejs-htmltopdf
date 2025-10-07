@@ -413,5 +413,8 @@ html, body {
 .center-table th {
   text-align: center;
   padding: 5px;
-  border-spacing: 5px;
+}
+.center-table .highlight {
+  background: #fff1c4;
+  font-weight: bold;
 }

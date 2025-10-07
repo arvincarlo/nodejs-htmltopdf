@@ -38,9 +38,9 @@ export default ({totalDeposits, totalTimeDeposits}) => `
             <td></td>
             <td></td>
             <td></td>
-            <td style="background:#fff9e6; font-weight:bold;">TOTAL</td>
-            <td style="background:#fff9e6; font-weight:bold;">${formatPesos(totalDeposits.reduce((acc, item) => acc + item.currentBalance, 0))}</td>
-            <td style="background:#fff9e6; font-weight:bold;">${formatPesos(totalDeposits.reduce((acc, item) => acc + item.availableBalance, 0))}</td>
+            <td class="highlight">TOTAL</td>
+            <td class="highlight">${formatPesos(totalDeposits.reduce((acc, item) => acc + item.currentBalance, 0))}</td>
+            <td class="highlight">${formatPesos(totalDeposits.reduce((acc, item) => acc + item.availableBalance, 0))}</td>
           </tr>
           <!-- USD Section -->
           <tr>
@@ -51,32 +51,32 @@ export default ({totalDeposits, totalTimeDeposits}) => `
             <td>Makati Main</td>
             <td>Checking</td>
             <td>111111</td>
-            <td style="text-align:right;">2.00</td>
-            <td style="text-align:right;">2.00</td>
+            <td>2.00</td>
+            <td>2.00</td>
           </tr>
           <tr>
             <td style="text-align:left;">XXX</td>
             <td>Makati Main</td>
             <td>Savings</td>
             <td>111111</td>
-            <td style="text-align:right;">3.00</td>
-            <td style="text-align:right;">3.00</td>
+            <td>3.00</td>
+            <td>3.00</td>
           </tr>
           <tr>
             <td style="text-align:left;">XXX</td>
             <td>Makati Main</td>
             <td>Savings</td>
             <td>111111</td>
-            <td style="text-align:right;">4.00</td>
-            <td style="text-align:right;">4.00</td>
+            <td>4.00</td>
+            <td>4.00</td>
           </tr>
           <tr>
             <td></td>
             <td></td>
             <td></td>
-            <td style="background:#fff9e6; font-weight:bold;">TOTAL</td>
-            <td style="background:#fff9e6; text-align:right; font-weight:bold;">14.00</td>
-            <td style="background:#fff9e6; text-align:right; font-weight:bold;">14.00</td>
+            <td class="highlight">TOTAL</td>
+            <td class="highlight">14.00</td>
+            <td class="highlight">14.00</td>
           </tr>
         </tbody>
       </table>
@@ -122,13 +122,13 @@ export default ({totalDeposits, totalTimeDeposits}) => `
             <td></td>
             <td></td>
             <td></td>
-            <td style="background:#fff9e6; font-weight:bold;">TOTAL</td>
-            <td style="background:#fff9e6; font-weight:bold;">${formatPesos(totalTimeDeposits.reduce((sum, item) => sum + (item.principalAmount || 0), 0))}</td>
+            <td></td>
+            <td class="highlight">TOTAL</td>
+            <td class="highlight">${formatPesos(totalTimeDeposits.reduce((sum, item) => sum + (item.principalAmount || 0), 0))}</td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td style="background:#fff9e6; font-weight:bold;">${formatPesos(totalTimeDeposits.reduce((sum, item) => sum + (item.maturityValue || 0), 0))}</td>
+            <td class="highlight">${formatPesos(totalTimeDeposits.reduce((sum, item) => sum + (item.maturityValue || 0), 0))}</td>
           </tr>
         </tbody>
       </table>

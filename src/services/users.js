@@ -30,10 +30,10 @@ export async function getFcbsDepositsByCifNumber(cifNumber, month, year) {
         ISNULL(SUM(fd.[availableBalance]), 0) AS totalAvailableBalance,
         (
           SELECT ISNULL(SUM([principalAmount]), 0)
-          FROM [FcbsTimeDeposits]
+          FROM FcbsTimeDeposits
           WHERE [cifNumber] = @cifNumber
         ) AS totalPrincipalAmount
-      FROM [FcbsDeposits] fd
+      FROM FcbsDeposits fd
       WHERE fd.[cifNumber] = @cifNumber
         AND MONTH(fd.[dateCovered]) = @monthNum
         AND YEAR(fd.[dateCovered]) = @yearNum
@@ -109,7 +109,7 @@ export async function getTotalCBCSecMarketValue(cifNumber) {
     await sql.connect(config);
     const query = `
       SELECT ISNULL(SUM([marketValue]), 0) AS totalMarketValue
-      FROM [CBSecMapping]
+      FROM CBSecMapping
       WHERE [cifNumber] = @cifNumber
     `;
     const request = new sql.Request();
@@ -152,7 +152,7 @@ export async function getAllDeposits(cifNumber, month, year) {
         [referenceNumber],
         [currentBalance],
         [availableBalance]
-      FROM [WealthAppDB1.0].[dbo].[FcbsDeposits]
+      FROM FcbsDeposits
       WHERE [cifNumber] = @cifNumber
         AND MONTH([dateCovered]) = @monthNum
         AND YEAR([dateCovered]) = @yearNum
@@ -184,7 +184,7 @@ export async function getAllTimeDeposits(cifNumber) {
     const query = `
       SELECT
         *
-      FROM [WealthAppDB1.0].[dbo].[FcbsTimeDeposits]
+      FROM FcbsTimeDeposits
       WHERE [cifNumber] = @cifNumber
     `;
 
@@ -198,6 +198,40 @@ export async function getAllTimeDeposits(cifNumber) {
 
     return result.recordset;
   }  catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
+
+
+export async function getTransactionHistory(cifNumber, month, year) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT *
+      FROM FcbsCashTransactionHistorySACA
+      WHERE [accountNumber] IN (
+        SELECT [accountNumber]
+        FROM AccountDataTables
+        WHERE [cif] = @cifNumber
+      )
+      AND MONTH([transDateValueDate]) = @monthNum
+      AND YEAR([transDateValueDate]) = @yearNum;
+    `;
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
+
+    const request = new sql.Request();
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.Int, monthNum);
+    request.input('yearNum', sql.Int, yearNum);
+
+    const result = await request.query(query);
+    await sql.close();
+
+    console.log('transaction history result:', result);
+    return result.recordset;
+  } catch (error) {
     console.error('SQL error: ', error);
     return 0;
   }

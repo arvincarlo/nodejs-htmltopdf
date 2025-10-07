@@ -1,4 +1,6 @@
-export default (props) => `
+import { formatPesos, formatDateToShort } from '../../helpers/utils.js';
+
+export default ({ trasactionHistory }) => `
   <div class="page-header">
     <span>Cash Transaction History</span>
   </div>
@@ -35,51 +37,32 @@ export default (props) => `
     <div style="margin-bottom:24px;">
       <h2 style="font-size:14px; font-weight:bold; margin-bottom:12px;">PHP</h2>
       <div style="border:1px solid #000; width:85%; border-radius:8px; overflow-x:auto;">
-        <table style="width:100%; font-size:12px;">
+        <table class="center-table" style="width:100%; font-size:12px;">
           <thead>
             <tr>
-              <th style="padding:6px 8px; text-align:left; font-weight:bold;">Value Date</th>
-              <th style="padding:6px 8px; text-align:left; font-weight:bold;">Description</th>
-              <th style="padding:6px 8px; text-align:right; font-weight:bold;">Debit</th>
-              <th style="padding:6px 8px; text-align:right; font-weight:bold;">Credit</th>
-              <th style="padding:6px 8px; text-align:right; font-weight:bold;">Running Balance</th>
+              <th style="font-weight:bold;">Value Date</th>
+              <th style="font-weight:bold;">Description</th>
+              <th style="font-weight:bold;">Debit</th>
+              <th style="font-weight:bold;">Credit</th>
+              <th style="font-weight:bold;">Running Balance</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;">17-Mar-24</td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
-            </tr>
-            <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
-            </tr>
-            <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
-            </tr>
-            <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
-            </tr>
+            ${trasactionHistory.map(item => `
+              <tr style="border-bottom:10px solid black;">
+                <td>${formatDateToShort(item.transDateValueDate)}</td>
+                <td>${item.productDescription}</td>
+                <td>${formatPesos(item.debit)}</td>
+                <td>${formatPesos(item.credit)}</td>
+                <td>${formatPesos(item.runningBalance)}</td>
+              </tr>
+            `).join('')}
             <tr>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right; background:#fff9e6; font-weight:bold;">TOTAL</td>
-              <td style="padding:6px 8px; text-align:right; background:#fff9e6; font-weight:bold;">14.00</td>
-              <td style="padding:6px 8px; text-align:right; font-weight:bold;"></td>
+              <td></td>
+              <td></td>
+              <td class="highlight">TOTAL</td>
+              <td class="highlight">${formatPesos(trasactionHistory.reduce((sum, item) => sum + (item.credit || 0), 0))}</td>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -90,51 +73,51 @@ export default (props) => `
     <div style="margin-bottom:24px;">
       <h2 style="font-size:14px; font-weight:bold; margin-bottom:12px;">USD</h2>
       <div style="border:1px solid #000; width:85%; border-radius:8px; overflow-x:auto;">
-        <table style="width:100%; font-size:12px;">
+        <table class="center-table" style="width:100%; font-size:12px;">
           <thead>
             <tr>
-              <th style="padding:6px 8px; text-align:left; font-weight:bold;">Value Date</th>
-              <th style="padding:6px 8px; text-align:left; font-weight:bold;">Description</th>
-              <th style="padding:6px 8px; text-align:right; font-weight:bold;">Debit</th>
-              <th style="padding:6px 8px; text-align:right; font-weight:bold;">Credit</th>
-              <th style="padding:6px 8px; text-align:right; font-weight:bold;">Running Balance</th>
+              <th style="font-weight:bold;">Value Date</th>
+              <th style="font-weight:bold;">Description</th>
+              <th style="font-weight:bold;">Debit</th>
+              <th style="font-weight:bold;">Credit</th>
+              <th style="font-weight:bold;">Running Balance</th>
             </tr>
           </thead>
           <tbody>
             <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;">17-Mar-24</td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
+              <td>17-Mar-24</td>
+              <td></td>
+              <td>2.00</td>
+              <td>2.00</td>
+              <td></td>
             </tr>
             <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
+              <td></td>
+              <td></td>
+              <td>2.00</td>
+              <td>2.00</td>
+              <td></td>
             </tr>
             <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
+              <td></td>
+              <td></td>
+              <td>2.00</td>
+              <td>2.00</td>
+              <td></td>
             </tr>
             <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;">2.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
+              <td></td>
+              <td></td>
+              <td>2.00</td>
+              <td>2.00</td>
+              <td></td>
             </tr>
             <tr>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px;"></td>
-              <td style="padding:6px 8px; text-align:right; background:#fff9e6; font-weight:bold;">TOTAL</td>
-              <td style="padding:6px 8px; text-align:right; background:#fff9e6; font-weight:bold;">14.00</td>
-              <td style="padding:6px 8px; text-align:right;"></td>
+              <td></td>
+              <td></td>
+              <td class="highlight">TOTAL</td>
+              <td class="highlight">14.00</td>
+              <td></td>
             </tr>
           </tbody>
         </table>
