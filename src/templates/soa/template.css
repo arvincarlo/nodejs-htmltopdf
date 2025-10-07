@@ -412,5 +412,6 @@ html, body {
 .center-table td,
 .center-table th {
   text-align: center;
-  padding: 4px;
+  padding: 5px;
+  border-spacing: 5px;
 }
