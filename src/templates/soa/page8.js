@@ -4,6 +4,12 @@ export default (props) => `
   </div>
 
   <div class="content-section">
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+      <div>
+        <div style="font-weight:bold;">Account Name:</div>
+        <div style="font-weight:bold;">Account Number: </div>
+      </div>
+    </div>
     <!-- PESO Deposits Section -->
     <div style="margin-bottom:24px;">
       <h2 style="font-size:18px; font-weight:bold; margin-bottom:12px;">PESO Deposits</h2>

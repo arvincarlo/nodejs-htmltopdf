@@ -14,21 +14,21 @@ export default ({ transactionHistory }) => `
       <div>
         <div>
           <span style="font-weight:bold;">Beginning Balance:</span>
-          <span style="background:#FFFFE0; height:20px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+          <span style="background:#FFFFE0; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
         </div>
         <div>
           <span style="font-weight:bold;">Closing Balance:</span>
-          <span style="background:#FFFFE0; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+          <span style="background:#FFFFE0; height:15px; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
         </div>
       </div>
       <div>
         <div>
           <span style="font-weight:bold;">Current Balance:</span>
-          <span style="background:#FFFFE0; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+          <span style="background:#FFFFE0; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
         </div>
         <div>
           <span style="font-weight:bold;">Available Balance:</span>
-          <span style="background:#FFFFE0; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+          <span style="background:#FFFFE0; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
         </div>
       </div>
     </div>
@@ -66,6 +66,34 @@ export default ({ transactionHistory }) => `
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:24px; margin-top:32px;">
+      <div>
+        <div style="font-weight:bold;">Account Name: ${transactionHistory[0]?.accountName || ''}</div>
+        <div style="font-weight:bold;">Account Number: ${transactionHistory[0]?.accountNumber || ''}</div>
+      </div>
+      <div>
+        <div>
+          <span style="font-weight:bold;">Beginning Balance:</span>
+          <span style="background:#FFFFE0; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+        </div>
+        <div>
+          <span style="font-weight:bold;">Closing Balance:</span>
+          <span style="background:#FFFFE0; height:15px; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+        </div>
+      </div>
+      <div>
+        <div>
+          <span style="font-weight:bold;">Current Balance:</span>
+          <span style="background:#FFFFE0; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+        </div>
+        <div>
+          <span style="font-weight:bold;">Available Balance:</span>
+          <span style="background:#FFFFE0; height:15px; padding:2px 8px; display:inline-block; min-width:100px;"></span>
+        </div>
       </div>
     </div>
 
