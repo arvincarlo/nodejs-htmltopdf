@@ -1,12 +1,12 @@
-import express from "express";
-const router = express.Router();
-import htmlToPDF from "../helpers/html-to-pdf.js";
-import { generatePieChart, generateLineChart, generatePortfolioPieChart } from "../helpers/chartCanvas.js";
 import { PrismaClient } from "@prisma/client";
-import summaryTemplate from '../templates/soa/template.js';
-import { getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getAllDeposits, getAllTimeDeposits, getTransactionHistory } from "../services/users.js";
+import express from "express";
 import fs from 'fs';
 import path from 'path';
+import { generatePortfolioPieChart } from "../helpers/chartCanvas.js";
+import htmlToPDF from "../helpers/html-to-pdf.js";
+import { getAllDeposits, getAllTimeDeposits, getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getTransactionHistory, getAllTrustDeposits } from "../services/users.js";
+import summaryTemplate from '../templates/soa/template.js';
+const router = express.Router();
 
 // Pages
 import page1 from '../templates/soa/page1.js';
@@ -151,6 +151,7 @@ router.get('/users', async (req, res) => {
     const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
     const totalTimeDeposits = await getAllTimeDeposits(data.cifNumber);
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
+    const trustDeposits = await getAllTrustDeposits(data.cifNumber);
 
     // ... Pages definition
     const pages = [
@@ -161,7 +162,7 @@ router.get('/users', async (req, res) => {
       { component: page5 },
       { component: page6 },
       { component: page7 },
-      { component: page8 },
+      { component: page8, props: { trustDeposits } },
       { component: page9 },
       { component: page10 },
       { component: page11 },

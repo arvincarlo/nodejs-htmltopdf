@@ -229,7 +229,31 @@ export async function getTransactionHistory(cifNumber, month, year) {
     const result = await request.query(query);
     await sql.close();
 
-    console.log('transaction history result:', result);
+    return result.recordset;
+  } catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
+
+export async function getAllTrustDeposits(cifNumber) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT
+        *
+      FROM TrustDeposits
+      WHERE [cifNumber] = @cifNumber
+    `;
+
+    const request = new sql.Request();
+    request.input('cifNumber', sql.VarChar, cifNumber);
+
+    const result = await request.query(query);
+    await sql.close();
+
+    console.log('trust deposits result:', result);
+
     return result.recordset;
   } catch (error) {
     console.error('SQL error: ', error);
