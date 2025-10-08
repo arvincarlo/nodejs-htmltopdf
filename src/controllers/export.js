@@ -4,11 +4,19 @@ import fs from 'fs';
 import path from 'path';
 import { generatePortfolioPieChart } from "../helpers/chartCanvas.js";
 import htmlToPDF from "../helpers/html-to-pdf.js";
-import { getAllDeposits, getAllTimeDeposits, getFcbsDepositsByCifNumber, getTotalTrustPortfolio, getTransactionHistory, getAllTrustDeposits } from "../services/users.js";
+import { 
+  getAllDeposits, 
+  getAllTimeDeposits, 
+  getFcbsDepositsByCifNumber, 
+  getTotalTrustPortfolio, 
+  getTransactionHistory, 
+  getAllTrustDeposits, 
+  getAllTrustFixedIncome 
+} from "../services/users.js";
 import summaryTemplate from '../templates/soa/template.js';
 const router = express.Router();
 
-// Pages
+// Import Pages
 import page1 from '../templates/soa/page1.js';
 import page2 from '../templates/soa/page2.js';
 import page3 from '../templates/soa/page3.js';
@@ -152,6 +160,7 @@ router.get('/users', async (req, res) => {
     const totalTimeDeposits = await getAllTimeDeposits(data.cifNumber);
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
     const trustDeposits = await getAllTrustDeposits(data.cifNumber);
+    const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
 
     // ... Pages definition
     const pages = [
@@ -163,7 +172,7 @@ router.get('/users', async (req, res) => {
       { component: page6 },
       { component: page7 },
       { component: page8, props: { trustDeposits } },
-      { component: page9 },
+      { component: page9, props: { trustFixedIncome } },
       { component: page10 },
       { component: page11 },
       { component: page12 },

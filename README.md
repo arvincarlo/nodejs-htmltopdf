@@ -22,3 +22,6 @@ clarifications:
 
 62	(PHP) Maturity Value TOTAL	Total of all maturity value from client's PHP TD / PSA accounts		Number	Total of  all values under field 	FcbsTimeDeposits.maturityValue
 String	PHP	FcbsTimeDeposits.currency
+
+page 8 - accountNumber
+page 8 - accountNumber
