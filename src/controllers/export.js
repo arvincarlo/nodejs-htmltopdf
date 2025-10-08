@@ -183,7 +183,7 @@ router.get('/users', async (req, res) => {
       { component: page9, props: { trustFixedIncome } },
       { component: page10, props: { trustEquities } },
       { component: page11 },
-      { component: page12 },
+      { component: page12, props: { trustEquities } },
       { component: page13 },
       { component: page14 },
       { component: page15 },
