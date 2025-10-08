@@ -51,7 +51,6 @@ export async function getFcbsDepositsByCifNumber(cifNumber, month, year) {
 
 
     const result = await request.query(query);
-    console.log(result);
     await sql.close();
 
     const row = result.recordset[0] || {};
@@ -84,7 +83,6 @@ export async function getTotalTrustPortfolio(cifNumber) {
     await sql.close();
 
     const row = result.recordset[0] || {};
-    console.log(row);
 
     // Sum all fields for the total
     return (
@@ -252,8 +250,6 @@ export async function getAllTrustDeposits(cifNumber) {
     const result = await request.query(query);
     await sql.close();
 
-    console.log('trust deposits result:', result);
-
     return result.recordset;
   } catch (error) {
     console.error('SQL error: ', error);
@@ -300,7 +296,34 @@ export async function getAllTrustEquities(cifNumber) {
     const result = await request.query(query);
     await sql.close();
 
-    console.log('trust equities result: ', result);
+    return result.recordset;
+  } catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
+
+
+export async function getAllCBSecMapping(cifNumber) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT *
+      FROM CBSecMapping
+      WHERE accountCode IN (
+        SELECT AccountNumber
+        FROM AccountDataTables
+        WHERE [Cif] = @Cif
+      );
+    `;
+
+    const request = new sql.Request();
+    request.input('Cif', sql.VarChar, cifNumber);
+
+    const result = await request.query(query);
+    await sql.close();
+
+    console.log('CBSecMapping result: ', result);
 
     return result.recordset;
   } catch (error) {

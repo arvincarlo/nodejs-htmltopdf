@@ -12,7 +12,8 @@ import {
   getTransactionHistory, 
   getAllTrustDeposits, 
   getAllTrustFixedIncome,
-  getAllTrustEquities
+  getAllTrustEquities,
+  getAllCBSecMapping
 } from "../services/users.js";
 import summaryTemplate from '../templates/soa/template.js';
 const router = express.Router();
@@ -169,6 +170,7 @@ router.get('/users', async (req, res) => {
     const trustDeposits = await getAllTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
     const trustEquities = await getAllTrustEquities(data.cifNumber);
+    const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
 
     // ... Pages definition
     const pages = [
@@ -185,7 +187,7 @@ router.get('/users', async (req, res) => {
       { component: page11 },
       { component: page12, props: { trustEquities } },
       { component: page13 },
-      { component: page14 },
+      { component: page14, props: { CBSecMapping } },
       { component: page15 },
     ];
 
