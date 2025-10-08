@@ -409,12 +409,12 @@ html, body {
   margin-top: 10px;
   padding: 5px;
 }
-.center-table td,
-.center-table th {
+.table-center td,
+.table-center th {
   text-align: center;
   padding: 5px;
 }
-.center-table .highlight {
+.table-center .highlight {
   background: #fff1c4;
   font-weight: bold;
 }

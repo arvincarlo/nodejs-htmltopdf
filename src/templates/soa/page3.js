@@ -37,7 +37,7 @@ export default ({ transactionHistory }) => `
     <div style="margin-bottom:24px;">
       <h2 style="font-size:14px; font-weight:bold; margin-bottom:12px;">PHP</h2>
       <div style="border:1px solid #000; width:85%; border-radius:8px; overflow-x:auto;">
-        <table class="center-table" style="width:100%; font-size:12px;">
+        <table class="table-center" style="width:100%; font-size:12px;">
           <thead>
             <tr>
               <th style="font-weight:bold;">Value Date</th>
@@ -101,7 +101,7 @@ export default ({ transactionHistory }) => `
     <div style="margin-bottom:24px;">
       <h2 style="font-size:14px; font-weight:bold; margin-bottom:12px;">USD</h2>
       <div style="border:1px solid #000; width:85%; border-radius:8px; overflow-x:auto;">
-        <table class="center-table" style="width:100%; font-size:12px;">
+        <table class="table-center" style="width:100%; font-size:12px;">
           <thead>
             <tr>
               <th style="font-weight:bold;">Value Date</th>
