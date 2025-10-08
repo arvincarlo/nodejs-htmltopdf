@@ -55,11 +55,6 @@ router.post('/users', async (req, res) => {
   const data = req.body;
   console.log(data);
   try {
-    const portfolioPieChart = await generatePortfolioPieChart(data);
-    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
-    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
-    const totalCBCSecMarketValue = 0;
-
     const headerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'header-logo.png')
     );
@@ -69,27 +64,39 @@ router.post('/users', async (req, res) => {
     const footerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
     );
-
-    // Sum the values
+    
+    // GET summary and pie chart
+    const portfolioPieChart = await generatePortfolioPieChart(data);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
+    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
+    const totalCBCSecMarketValue = 0;
     const totalValue =
       (data.unitTrustsValue || 0) +
       (data.structuredProductsValue || 0) +
       (data.equitiesValue || 0) +
       (data.fixedIncomeValue || 0) +
       (data.moneyMarketValue || 0);
+    
+    // GET deposits
+    const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
+    const totalTimeDeposits = await getAllTimeDeposits(data.cifNumber);
+    const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
+    const trustDeposits = await getAllTrustDeposits(data.cifNumber);
+    const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
+    const trustEquities = await getAllTrustEquities(data.cifNumber);
 
     // ... Pages definition
     const pages = [
       { component: page1, props: { ...data, portfolioPieChart, totalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
-      { component: page2, props: { ...data, extraField: 'value2' } },
-      { component: page3 },
+      { component: page2, props: { totalDeposits, totalTimeDeposits} },
+      { component: page3, props: { transactionHistory } },
       { component: page4 },
       { component: page5 },
       { component: page6 },
       { component: page7 },
-      { component: page8 },
-      { component: page9 },
-      { component: page10 },
+      { component: page8, props: { trustDeposits } },
+      { component: page9, props: { trustFixedIncome } },
+      { component: page10, props: { trustEquities } },
       { component: page11 },
       { component: page12 },
       { component: page13 },
@@ -133,11 +140,6 @@ router.get('/users', async (req, res) => {
   console.log("data in export: ", data);
 
   try {
-    const portfolioPieChart = await generatePortfolioPieChart(data);
-    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
-    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
-    const totalCBCSecMarketValue = 0;
-
     const headerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'header-logo.png')
     );
@@ -147,8 +149,12 @@ router.get('/users', async (req, res) => {
     const footerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
     );
-
-    // Sum the values
+    
+    // GET summary and pie chart
+    const portfolioPieChart = await generatePortfolioPieChart(data);
+    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
+    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
+    const totalCBCSecMarketValue = 0;
     const totalValue =
       (data.unitTrustsValue || 0) +
       (data.structuredProductsValue || 0) +
