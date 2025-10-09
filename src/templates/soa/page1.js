@@ -203,11 +203,11 @@ export default ({
               </div>
               <div class="summary-appendix-container">
                 <div class="summary-appendix text-primary">
-                  <div>Foreign Currency Exchange Rates as of April 23, 2024</div>
-                  <div>1 USD - 58.00</div>
-                  <div>2 EUR - 67.00</div>
-                  <div>3 CNY - 45.00</div>
-                  <div>4 JPY - 50.00</div>
+                  <div>Foreign Currency Exchange Rates as of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                  ${showUSD ? `<div>1 USD - 58.00</div>` : ''}
+                  ${showEUR ? `<div>2 EUR - 67.00</div>` : ''}
+                  ${showCNY ? `<div>3 CNY - 45.00</div>` : ''}
+                  ${showJPY ? `<div>4 JPY - 50.00</div>` : ''}
                 </div>
                 <img class="footer-logo" src="./images/footer-logo.png" />
               </div>
