@@ -323,8 +323,6 @@ export async function getAllCBSecMapping(cifNumber) {
     const result = await request.query(query);
     await sql.close();
 
-    console.log('CBSecMapping result: ', result);
-
     return result.recordset;
   } catch (error) {
     console.error('SQL error: ', error);

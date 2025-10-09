@@ -4,7 +4,7 @@ export default ({
   month,
   year,
   accountName,
-  totalValue,
+  overallTotalValue,
   lastMonthAUM,
   totalBankPortfolio,
   totalTrustPortfolio,
@@ -35,7 +35,7 @@ export default ({
               <div class="height-full flex items-center">
                 <div>
                   <div class="currency font-weight-600">PHP</div>
-                  <div class="amount font-weight-600">${formatPesos(totalValue)}</div>
+                  <div class="amount font-weight-600">${formatPesos(overallTotalValue)}</div>
                 </div>
               </div>
             </div>
@@ -61,9 +61,9 @@ export default ({
                 <div class="change">
                   <div class="font-weight-600">% Change</div>
                   <div class="font-weight-600">
-                    ${getPercentageChange(totalValue, lastMonthAUM) > 0 
-                      ? `+ ${getPercentageChange(totalValue, lastMonthAUM)}% &#9650;` 
-                      : `${getPercentageChange(totalValue, lastMonthAUM)}% &#9660;` }
+                    ${getPercentageChange(overallTotalValue, lastMonthAUM) > 0 
+                      ? `+ ${getPercentageChange(overallTotalValue, lastMonthAUM)}% &#9650;` 
+                      : `${getPercentageChange(overallTotalValue, lastMonthAUM)}% &#9660;` }
                   </div>
                 </div>
               </div>
@@ -152,31 +152,31 @@ export default ({
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Money Market</td>
                         <td class="text-center">${formatPesos(moneyMarketValue)}</td>
-                        <td class="text-center">${getPercentage(moneyMarketValue, totalValue)}%</td>
+                        <td class="text-center">${getPercentage(moneyMarketValue, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Fixed Income</td>
                         <td class="text-center">${formatPesos(fixedIncomeValue)}</td>
-                        <td class="text-center">${getPercentage(fixedIncomeValue, totalValue)}%</td>
+                        <td class="text-center">${getPercentage(fixedIncomeValue, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Equities</td>
                         <td class="text-center">${formatPesos(equitiesValue)}</td>
-                        <td class="text-center">${getPercentage(equitiesValue, totalValue)}%</td>
+                        <td class="text-center">${getPercentage(equitiesValue, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
                         <td class="text-center">${formatPesos(structuredProductsValue)}</td>
-                        <td class="text-center">${getPercentage(structuredProductsValue, totalValue)}%</td>
+                        <td class="text-center">${getPercentage(structuredProductsValue, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Unit Trusts</td>
                         <td class="text-center">${formatPesos(unitTrustsValue)}</td>
-                        <td class="text-center">${getPercentage(unitTrustsValue, totalValue)}%</td>
+                        <td class="text-center">${getPercentage(unitTrustsValue, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px uppercase text-primary font-weight-600">Total</td>
-                        <td class="text-center">${formatPesos(totalValue)}</td>
+                        <td class="text-center">${formatPesos(overallTotalValue)}</td>
                         <td class="text-center">100%</td>
                       </tr>
                     </tbody>

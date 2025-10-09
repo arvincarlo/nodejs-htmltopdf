@@ -1,7 +1,8 @@
 @font-face {
   font-family: 'Roboto';
-  src: url('file:///d:/my_projects/node_pdf/public/fonts/Roboto-Regular.ttf') format('truetype');
-  font-weight: 400;
+  src: url('/fonts/Roboto-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 html, body {
   margin: 0 !important;
