@@ -157,16 +157,21 @@ html, body {
   border-right: 2px solid #ffffff;
   margin-right: 15px;
   box-sizing: border-box;
+  font-size: 16px;
+  font-weight: bold;
 }
 .summary-table-heading-2 {
   width: 75%;
   margin-right: 15px;
+  font-size: 16px;
+  font-weight: bold;
 }
 .summary-table td {
   padding: 10px;
   font-size: 15px;
   line-height: 22.5px;
   white-space: nowrap;
+  font-weight: normal;
 }
 .summary-portfolio-holdings {
   height: 445px;
@@ -188,6 +193,7 @@ html, body {
   line-height: 36px;
   border-radius: 10px 10px 0px 0px;
   box-sizing: border-box;
+  font-weight: bold;
 }
 .summary-card-subheader {
   height: 59px;
@@ -421,6 +427,9 @@ html, body {
   background: #fff1c4;
   font-weight: bold;
 }
+.fs-16 {
+  font-size: 16px;
+}
 .fs-20 {
   font-size: 20px;
 }
@@ -429,4 +438,10 @@ html, body {
 }
 .fs-30 {
   font-size: 30px;
+}
+.summary-table .fw-bold {
+  font-weight: bold;
+}
+.summary-table .text-center {
+  text-align: center;
 }

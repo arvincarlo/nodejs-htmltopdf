@@ -28,7 +28,7 @@ export default ({
       <div class="flex gap-10px"> 
         <div class="summary-cards">
           <div class="summary-card">
-            <div class="summary-card-header flex items-center bg-primary">
+            <div class="summary-card-header flex items-center bg-primary fs-20 fw-bold">
               Total AUM as of ${getLastDayOfMonth(month, year)}
             </div>
             <div class="summary-card-content-total-aum width-full summary-card-content border-bottom">
@@ -75,50 +75,50 @@ export default ({
           <table class="summary-table">
             <tbody class="font-weight-600">
               <tr class="summary-table-header bg-primary text-white">
-                <td class="summary-table-heading-1">Portfolio Summary</td>
-                <td class="summary-table-heading-2" colspan="6">
+                <td class="summary-table-heading-1 fs-16 fw-bold">Portfolio Summary</td>
+                <td class="summary-table-heading-2 fs-16 fw-bold" colspan="6">
                   Current Value in Original Currency
                 </td>
               </tr>
               <tr>
                 <td class="summary-table-label"></td>
-                <td class="text-primary">PHP</td>
-                <td class="text-primary">USD<sup>1</sup></td>
-                <td class="text-primary">EUR<sup>2</sup></td>
-                <td class="text-primary">CNY<sup>3</sup></td>
-                <td class="text-primary">JPY<sup>4</sup></td>
+                <td class="text-primary text-center fw-bold">PHP</td>
+                <td class="text-primary text-center fw-bold">USD<sup>1</sup></td>
+                <td class="text-primary text-center fw-bold">EUR<sup>2</sup></td>
+                <td class="text-primary text-center fw-bold">CNY<sup>3</sup></td>
+                <td class="text-primary text-center fw-bold">JPY<sup>4</sup></td>
               </tr>
               <tr>
-                <td class="summary-table-label text-primary">Total Bank Portfolio</td>
-                <td>${formatPesos(totalBankPortfolio)}</td>
-                <td>10,000.00</td>
-                <td>10,000.00</td>
-                <td>10,000.00</td>
-                <td>10,000.00</td>
+                <td class="summary-table-label text-primary fw-bold">Total Bank Portfolio</td>
+                <td class="text-center">${formatPesos(totalBankPortfolio)}</td>
+                <td class="text-center">10,000.00</td>
+                <td class="text-center">10,000.00</td>
+                <td class="text-center">10,000.00</td>
+                <td class="text-center">10,000.00</td>
               </tr>
               <tr>
-                <td class="summary-table-label text-primary">Total Trust Portfolio</td>
-                <td>${formatPesos(totalTrustPortfolio)}</td>
-                <td>5,000.00</td>
-                <td>5,000.00</td>
-                <td>5,000.00</td>
-                <td>5,000.00</td>
+                <td class="summary-table-label text-primary fw-bold">Total Trust Portfolio</td>
+                <td class="text-center">${formatPesos(totalTrustPortfolio)}</td>
+                <td class="text-center">5,000.00</td>
+                <td class="text-center">5,000.00</td>
+                <td class="text-center">5,000.00</td>
+                <td class="text-center">5,000.00</td>
               </tr>
               <tr>
-                <td class="summary-table-label text-primary">Total CBC Securities Portfolio</td>
-                <td>${formatPesos(totalCBCSecMarketValue)}</td>
-                <td>13,000.00</td>
-                <td>13,000.00</td>
-                <td>13,000.00</td>
-                <td>13,000.00</td>
+                <td class="summary-table-label text-primary fw-bold">Total CBC Securities Portfolio</td>
+                <td class="text-center">${formatPesos(totalCBCSecMarketValue)}</td>
+                <td class="text-center">13,000.00</td>
+                <td class="text-center">13,000.00</td>
+                <td class="text-center">13,000.00</td>
+                <td class="text-center">13,000.00</td>
               </tr>
               <tr>
-                <td class="summary-table-label text-primary uppercase font-weight-700">Grand Total</td>
-                <td>${formatPesos(totalBankPortfolio + totalTrustPortfolio + totalCBCSecMarketValue)}</td>
-                <td>28,000.00</td>
-                <td>28,000.00</td>
-                <td>28,000.00</td>
-                <td>28,000.00</td>
+                <td class="summary-table-label text-primary fw-bold uppercase font-weight-700">Grand Total</td>
+                <td class="fw-bold text-center">${formatPesos(totalBankPortfolio + totalTrustPortfolio + totalCBCSecMarketValue)}</td>
+                <td class="fw-bold text-center">28,000.00</td>
+                <td class="fw-bold text-center">28,000.00</td>
+                <td class="fw-bold text-center">28,000.00</td>
+                <td class="fw-bold text-center">28,000.00</td>
               </tr>
             </tbody>
           </table>
