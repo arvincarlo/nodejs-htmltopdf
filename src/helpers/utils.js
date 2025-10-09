@@ -22,3 +22,11 @@ export function formatDateToShort(dateInput) {
   const year = String(date.getFullYear()).slice(-2);
   return `${day}-${month}-${year}`;
 }
+
+export function getLastDayOfMonth(month, year) {
+  // month: string (e.g. "April"), year: number or string
+  const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
+  const lastDay = new Date(year, monthIndex + 1, 0);
+  // Format as "April 30, 2024"
+  return `${month} ${lastDay.getDate()}, ${year}`;
+}

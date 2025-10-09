@@ -1,4 +1,4 @@
-import { formatPesos, getPercentage, getPercentageChange } from '../../helpers/utils.js';
+import { formatPesos, getPercentage, getPercentageChange, getLastDayOfMonth } from '../../helpers/utils.js';
 
 export default ({
   month,
@@ -18,20 +18,20 @@ export default ({
 }) => {
   return `
     <div style="padding: 32px;">
-      <div class="document-title">Portfolio Holdings Statement</div>
+      <div class="document-title font-weight-700">Portfolio Holdings Statement</div>
       <div>
-        as of ${month} ${year} for
+        as of ${getLastDayOfMonth(month, year)} for
       </div>
-      <div class="summay-full-name uppercase">
+      <div class="summary-full-name uppercase">
         ${accountName}
       </div>
       <div class="flex gap-10px"> 
         <div class="summary-cards">
-          <div class="summay-card">
-            <div class="summay-card-header flex items-center bg-primary">
-              Total AUM This Month
+          <div class="summary-card">
+            <div class="summary-card-header flex items-center bg-primary">
+              Total AUM as of ${getLastDayOfMonth(month, year)}
             </div>
-            <div class="summay-card-content-total-aum width-full summay-card-content border-bottom">
+            <div class="summary-card-content-total-aum width-full summary-card-content border-bottom">
               <div class="height-full flex items-center">
                 <div>
                   <div class="currency font-weight-600">PHP</div>
@@ -39,28 +39,28 @@ export default ({
                 </div>
               </div>
             </div>
-            <div class="summay-card-subheader summay-card-content width-full flex items-center font-weight-600 border-bottom">
+            <div class="summary-card-subheader summary-card-content width-full flex items-center font-weight-600 border-bottom">
               Total AUM Last Month*
             </div>
-            <div class="summay-card-content flex items-center border-bottom">
+            <div class="summary-card-content flex items-center border-bottom">
               <div>
                 <div class="currency font-weight-600">PHP</div>
-                <div class="amount font-weight-600">${formatPesos(prevMonthAUM)}</div>
+                <div class="amount font-weight-600 fs-30">${formatPesos(prevMonthAUM)}</div>
                 <div class="report-note text-primary font-weight-500">
-                  *Based on last month’s report
+                  *Based on last month’s ending balance
                 </div>
               </div>
             </div>
-            <div class="summay-card-subheader summay-card-content flex items-center font-weight-600 border-bottom">
+            <div class="summary-card-subheader summary-card-content flex items-center font-weight-600 border-bottom">
               AUM Change
             </div>
-            <div class="summay-card-content flex items-center">
+            <div class="summary-card-content flex items-center">
               <div>
                 <div class="currency font-weight-600">PHP</div>
-                <div class="amount font-weight-600">${formatPesos(prevMonthAUM)}</div>
+                <div class="amount font-weight-600 fs-24">${formatPesos(prevMonthAUM)}</div>
                 <div class="change">
                   <div class="font-weight-600">% Change</div>
-                  <div class="font-weight-600">
+                  <div class="font-weight-600 fs-24">
                     ${getPercentageChange(overallTotalValue, prevMonthAUM) > 0 
                       ? `+ ${getPercentageChange(overallTotalValue, prevMonthAUM)}% &#9650;` 
                       : `${getPercentageChange(overallTotalValue, prevMonthAUM)}% &#9660;` }

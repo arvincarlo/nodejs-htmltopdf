@@ -125,8 +125,9 @@ html, body {
   font-size: 20px;
   line-height: 30px;
 }
-.summay-full-name {
-  padding: 20px 0px;
+.summary-full-name {
+  font-size: 24px;
+  padding: 12px 0px;
 }
 .summary-cards {
   width: 20%;
@@ -174,35 +175,36 @@ html, body {
   border: 1px solid #000000;
   border-radius: 10px;
 }
-.summay-card {
+.summary-card {
   height: 801px;
   border: 1px solid #000000;
   border-radius: 10px;
 }
-.summay-card-header {
+.summary-card-header {
   height: 86px;
   padding: 35px;
   color: #ffffff;
-  font-size: 24px;
+  font-size: 16px;
   line-height: 36px;
   border-radius: 10px 10px 0px 0px;
   box-sizing: border-box;
 }
-.summay-card-subheader {
+.summary-card-subheader {
   height: 59px;
+  font-size: 20px;
 }
 .summary-table-label {
   border-right: 2px solid #ffd0d0;
 }
-.summay-card-content {
-  padding: 35px;
+.summary-card-content {
+  padding: 30px;
   box-sizing: border-box;
 }
-.summay-card-content-total-aum {
+.summary-card-content-total-aum {
   height: 279px;
   background-color: #ecca73;
 }
-.summay-card-content-total-aum .amount {
+.summary-card-content-total-aum .amount {
   font-size: 38px;
   line-height: 57px;
 }
@@ -418,4 +420,13 @@ html, body {
 .table-center .highlight {
   background: #fff1c4;
   font-weight: bold;
+}
+.fs-20 {
+  font-size: 20px;
+}
+.fs-24 {
+  font-size: 24px;
+}
+.fs-30 {
+  font-size: 30px;
 }
