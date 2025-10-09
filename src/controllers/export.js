@@ -13,7 +13,8 @@ import {
   getAllTrustDeposits, 
   getAllTrustFixedIncome,
   getAllTrustEquities,
-  getAllCBSecMapping
+  getAllCBSecMapping,
+  getPrevMonthAUM
 } from "../services/users.js";
 import summaryTemplate from '../templates/soa/template.js';
 const router = express.Router();
@@ -54,7 +55,7 @@ router.get('/health', (req, res) => {
 
 router.post('/users', async (req, res) => {
   const data = req.body;
-  console.log(data);
+  console.log("data in export: ", data);
   try {
     const headerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'header-logo.png')
@@ -73,6 +74,7 @@ router.post('/users', async (req, res) => {
     const trustDeposits = await getAllTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
     const trustEquities = await getAllTrustEquities(data.cifNumber);
+    const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
     
     // GET summary and pie chart
     const portfolioPieChart = await generatePortfolioPieChart(data);
@@ -85,10 +87,11 @@ router.post('/users', async (req, res) => {
       (data.equitiesValue || 0) +
       (data.fixedIncomeValue || 0) +
       (data.moneyMarketValue || 0);
+    const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue, prevMonthAUM } },
       { component: page2, props: { totalDeposits, totalTimeDeposits} },
       { component: page3, props: { transactionHistory } },
       { component: page4 },
@@ -99,9 +102,9 @@ router.post('/users', async (req, res) => {
       { component: page9, props: { trustFixedIncome } },
       { component: page10, props: { trustEquities } },
       { component: page11 },
-      { component: page12 },
+      { component: page12, props: { trustEquities } },
       { component: page13 },
-      { component: page14 },
+      { component: page14, props: { CBSecMapping } },
       { component: page15 },
     ];
 
@@ -134,7 +137,6 @@ router.get('/users', async (req, res) => {
     equitiesValue: 800000,
     fixedIncomeValue: 1500000,
     moneyMarketValue: 1000000,
-    lastMonthAUM: 5700000,
     cifNumber: 'R23500000',
   }
 
@@ -171,10 +173,11 @@ router.get('/users', async (req, res) => {
       (data.equitiesValue || 0) +
       (data.fixedIncomeValue || 0) +
       (data.moneyMarketValue || 0);
+    const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue, prevMonthAUM } },
       { component: page2, props: { totalDeposits, totalTimeDeposits} },
       { component: page3, props: { transactionHistory } },
       { component: page4 },

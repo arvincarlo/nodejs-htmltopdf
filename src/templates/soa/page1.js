@@ -5,7 +5,6 @@ export default ({
   year,
   accountName,
   overallTotalValue,
-  lastMonthAUM,
   totalBankPortfolio,
   totalTrustPortfolio,
   totalCBCSecMarketValue,
@@ -14,7 +13,8 @@ export default ({
   equitiesValue,
   structuredProductsValue,
   unitTrustsValue,
-  portfolioPieChart
+  portfolioPieChart,
+  prevMonthAUM
 }) => {
   return `
     <div style="padding: 32px;">
@@ -45,7 +45,7 @@ export default ({
             <div class="summay-card-content flex items-center border-bottom">
               <div>
                 <div class="currency font-weight-600">PHP</div>
-                <div class="amount font-weight-600">${formatPesos(lastMonthAUM)}</div>
+                <div class="amount font-weight-600">${formatPesos(prevMonthAUM)}</div>
                 <div class="report-note text-primary font-weight-500">
                   *Based on last month’s report
                 </div>
@@ -57,13 +57,13 @@ export default ({
             <div class="summay-card-content flex items-center">
               <div>
                 <div class="currency font-weight-600">PHP</div>
-                <div class="amount font-weight-600">${formatPesos(lastMonthAUM)}</div>
+                <div class="amount font-weight-600">${formatPesos(prevMonthAUM)}</div>
                 <div class="change">
                   <div class="font-weight-600">% Change</div>
                   <div class="font-weight-600">
-                    ${getPercentageChange(overallTotalValue, lastMonthAUM) > 0 
-                      ? `+ ${getPercentageChange(overallTotalValue, lastMonthAUM)}% &#9650;` 
-                      : `${getPercentageChange(overallTotalValue, lastMonthAUM)}% &#9660;` }
+                    ${getPercentageChange(overallTotalValue, prevMonthAUM) > 0 
+                      ? `+ ${getPercentageChange(overallTotalValue, prevMonthAUM)}% &#9650;` 
+                      : `${getPercentageChange(overallTotalValue, prevMonthAUM)}% &#9660;` }
                   </div>
                 </div>
               </div>

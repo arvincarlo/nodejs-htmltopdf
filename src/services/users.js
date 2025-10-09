@@ -329,3 +329,42 @@ export async function getAllCBSecMapping(cifNumber) {
     return 0;
   }
 }
+
+export async function getPrevMonthAUM(cifNumber, month, year) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT SUM(moneyMarketValue + fixedIncomeValue + equitiesValue + structuredProductsValue + unitTrustsValue)
+      FROM [WealthAppDB1.0].[dbo].[CustomerDetails]
+      WHERE [cifNumber] = @cifNumber
+        AND MONTH([dateCovered]) = 
+          (CASE 
+            WHEN @monthNum = 1 THEN 12 
+            ELSE @monthNum - 1 
+          END)
+        AND YEAR([dateCovered]) = 
+          (CASE 
+            WHEN @monthNum = 1 THEN @yearNum - 1 
+            ELSE @yearNum 
+          END)
+    `;
+
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
+    const request = new sql.Request();
+
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.VarChar, monthNum);
+    request.input('yearNum', sql.VarChar, yearNum);
+
+
+    const result = await request.query(query);
+    await sql.close();
+    
+    const value = result.recordset[0]?.[''] || 0;
+    return value;
+  } catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
