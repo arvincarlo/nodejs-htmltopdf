@@ -8,7 +8,7 @@ export default ({totalDeposits, totalTimeDeposits}) => `
   <div class="content-section">
     <h2 style="font-size:18px; font-weight:bold; margin-bottom:8px;">Deposits</h2>
     <div style="border:1px solid #000; border-radius:8px; padding:8px; margin-bottom:16px; margin-top:8px;">
-      <table class="table-center" style="width:60%; font-size:14px;">
+      <table class="table-center" style="width:100%; font-size:14px;">
         <thead>
           <tr>
             <th style="text-align:left;">Account Name</th>

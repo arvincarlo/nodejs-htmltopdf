@@ -105,7 +105,6 @@ router.post('/users', async (req, res) => {
       { component: page12, props: { trustEquities } },
       { component: page13 },
       { component: page14, props: { CBSecMapping } },
-      { component: page15 },
     ];
 
     const html = summaryTemplate({
@@ -191,7 +190,6 @@ router.get('/users', async (req, res) => {
       { component: page12, props: { trustEquities } },
       { component: page13 },
       { component: page14, props: { CBSecMapping } },
-      { component: page15 },
     ];
 
     const html = summaryTemplate({

@@ -17,7 +17,7 @@ export default ({trustEquities}) => `
     <div style="margin-bottom:24px;">
       <h2 style="font-size:18px; font-weight:bold; margin-bottom:12px;">UITF(PESO)</h2>
       <div style="border:1px solid #000; border-radius:8px; overflow-x:auto;">
-        <table class="table-center" style="width:85%; font-size:12px;">
+        <table class="table-center" style="width:100%; font-size:12px;">
           <thead>
             <tr>
               <th style="text-align:left;">Product Description</th>
@@ -60,7 +60,7 @@ export default ({trustEquities}) => `
     <div style="margin-bottom:24px;">
       <h2 style="font-size:18px; font-weight:bold; margin-bottom:12px;">UITF(USD)</h2>
       <div style="border:1px solid #000; border-radius:8px; overflow-x:auto;">
-        <table style="width:85%; font-size:12px;">
+        <table style="width:100%; font-size:12px;">
           <thead>
             <tr>
               <th style="padding:8px 6px; text-align:left;">Product Description</th>
