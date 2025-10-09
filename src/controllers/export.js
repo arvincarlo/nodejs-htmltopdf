@@ -5,6 +5,7 @@ import path from 'path';
 import { generatePortfolioPieChart } from "../helpers/chartCanvas.js";
 import htmlToPDF from "../helpers/html-to-pdf.js";
 import { 
+  getAllUserCurrency,
   getAllDeposits, 
   getAllTimeDeposits, 
   getFcbsDepositsByCifNumber, 
@@ -151,6 +152,9 @@ router.get('/users', async (req, res) => {
     const footerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
     );
+
+    // GET All the currency of the user
+    const currencyCodes = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     
     // GET deposits
     const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
@@ -176,7 +180,7 @@ router.get('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue, prevMonthAUM } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue, prevMonthAUM, currency: currencyCodes } },
       { component: page2, props: { totalDeposits, totalTimeDeposits} },
       { component: page3, props: { transactionHistory } },
       { component: page4 },

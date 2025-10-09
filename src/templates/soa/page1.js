@@ -14,8 +14,14 @@ export default ({
   structuredProductsValue,
   unitTrustsValue,
   portfolioPieChart,
-  prevMonthAUM
+  prevMonthAUM,
+  currency
 }) => {
+  const showUSD = currency.includes(1);
+  const showEUR = currency.includes(2);
+  const showCNY = currency.includes(3);
+  const showJPY = currency.includes(4);
+
   return `
     <div style="padding: 32px;">
       <div class="document-title font-weight-700">Portfolio Holdings Statement</div>
@@ -83,42 +89,42 @@ export default ({
               <tr>
                 <td class="summary-table-label"></td>
                 <td class="text-primary text-center fw-bold">PHP</td>
-                <td class="text-primary text-center fw-bold">USD<sup>1</sup></td>
-                <td class="text-primary text-center fw-bold">EUR<sup>2</sup></td>
-                <td class="text-primary text-center fw-bold">CNY<sup>3</sup></td>
-                <td class="text-primary text-center fw-bold">JPY<sup>4</sup></td>
+                ${showUSD ? `<td class="text-primary text-center fw-bold">USD<sup>1</sup></td>` : ''}
+                ${showEUR ? `<td class="text-primary text-center fw-bold">EUR<sup>2</sup></td>` : ''} 
+                ${showCNY ? `<td class="text-primary text-center fw-bold">CNY<sup>3</sup></td>` : ''}
+                ${showJPY ? `<td class="text-primary text-center fw-bold">JPY<sup>4</sup></td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total Bank Portfolio</td>
                 <td class="text-center">${formatPesos(totalBankPortfolio)}</td>
-                <td class="text-center">10,000.00</td>
-                <td class="text-center">10,000.00</td>
-                <td class="text-center">10,000.00</td>
-                <td class="text-center">10,000.00</td>
+                ${showUSD ? `<td class="text-center">10,000.00</td>` : ''}
+                ${showEUR ? `<td class="text-center">10,000.00</td>` : ''}
+                ${showCNY ? `<td class="text-center">10,000.00</td>` : ''}
+                ${showJPY ? `<td class="text-center">10,000.00</td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total Trust Portfolio</td>
                 <td class="text-center">${formatPesos(totalTrustPortfolio)}</td>
-                <td class="text-center">5,000.00</td>
-                <td class="text-center">5,000.00</td>
-                <td class="text-center">5,000.00</td>
-                <td class="text-center">5,000.00</td>
+                ${showUSD ? `<td class="text-center">5,000.00</td>` : ''} 
+                ${showEUR ? `<td class="text-center">5,000.00</td>` : ''}
+                ${showCNY ? `<td class="text-center">5,000.00</td>` : ''}
+                ${showJPY ? `<td class="text-center">5,000.00</td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total CBC Securities Portfolio</td>
                 <td class="text-center">${formatPesos(totalCBCSecMarketValue)}</td>
-                <td class="text-center">13,000.00</td>
-                <td class="text-center">13,000.00</td>
-                <td class="text-center">13,000.00</td>
-                <td class="text-center">13,000.00</td>
+                ${showUSD ? `<td class="text-center">13,000.00</td>` : ''}
+                ${showEUR ? `<td class="text-center">13,000.00</td>` : ''}
+                ${showCNY ? `<td class="text-center">13,000.00</td>` : ''}
+                ${showJPY ? `<td class="text-center">13,000.00</td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold uppercase font-weight-700">Grand Total</td>
                 <td class="fw-bold text-center">${formatPesos(totalBankPortfolio + totalTrustPortfolio + totalCBCSecMarketValue)}</td>
-                <td class="fw-bold text-center">28,000.00</td>
-                <td class="fw-bold text-center">28,000.00</td>
-                <td class="fw-bold text-center">28,000.00</td>
-                <td class="fw-bold text-center">28,000.00</td>
+                ${showUSD ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
+                ${showEUR ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
+                ${showCNY ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
+                ${showJPY ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
               </tr>
             </tbody>
           </table>

@@ -368,3 +368,39 @@ export async function getPrevMonthAUM(cifNumber, month, year) {
     return 0;
   }
 }
+
+
+export async function getAllUserCurrency(cifNumber, month, year) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT DISTINCT [currency]
+      FROM FcbsDeposits
+      WHERE [cifNumber] = @cifNumber
+        AND MONTH([dateCovered]) = @monthNum
+        AND YEAR([dateCovered]) = @yearNum
+    `;
+
+    // Convert month shortname to month number (jun -> 6)
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
+    const request = new sql.Request();
+
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.VarChar, monthNum);
+    request.input('yearNum', sql.VarChar, yearNum);
+
+    const result = await request.query(query); 
+    await sql.close();
+
+    // map the currencies to return an array
+    const currencyCodes = result.recordset.map(c => c.currency);
+
+    console.log('currencies', currencyCodes);
+
+    return currencyCodes;
+  }  catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
