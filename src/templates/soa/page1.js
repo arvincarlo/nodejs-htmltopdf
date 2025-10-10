@@ -98,33 +98,33 @@ export default ({
                 <td class="summary-table-label text-primary fw-bold">Total Bank Portfolio</td>
                 <td class="text-center">${formatPesos(totalBankPortfolio[0])}</td>
                 ${showUSD ? `<td class="text-center">${formatPesos(totalBankPortfolio[1])}</td>` : ''}
-                ${showEUR ? `<td class="text-center">10,000.00</td>` : ''}
-                ${showCNY ? `<td class="text-center">10,000.00</td>` : ''}
-                ${showJPY ? `<td class="text-center">10,000.00</td>` : ''}
+                ${showEUR ? `<td class="text-center">${formatPesos(totalBankPortfolio[2])}</td>` : ''}
+                ${showCNY ? `<td class="text-center">${formatPesos(totalBankPortfolio[3])}</td>` : ''}
+                ${showJPY ? `<td class="text-center">${formatPesos(totalBankPortfolio[4])}</td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total Trust Portfolio</td>
                 <td class="text-center">${formatPesos(totalTrustPortfolio[0])}</td>
                 ${showUSD ? `<td class="text-center">${formatPesos(totalTrustPortfolio[1])}</td>` : ''} 
-                ${showEUR ? `<td class="text-center">5,000.00</td>` : ''}
-                ${showCNY ? `<td class="text-center">5,000.00</td>` : ''}
-                ${showJPY ? `<td class="text-center">5,000.00</td>` : ''}
+                ${showEUR ? `<td class="text-center">${formatPesos(totalTrustPortfolio[2])}</td>` : ''}
+                ${showCNY ? `<td class="text-center">${formatPesos(totalTrustPortfolio[3])}</td>` : ''}
+                ${showJPY ? `<td class="text-center">${formatPesos(totalTrustPortfolio[4])}</td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total CBC Securities Portfolio</td>
                 <td class="text-center">${formatPesos(totalCBSecMarketValue[0])}</td>
                 ${showUSD ? `<td class="text-center">${formatPesos(totalCBSecMarketValue[1])}</td>` : ''}
-                ${showEUR ? `<td class="text-center">13,000.00</td>` : ''}
-                ${showCNY ? `<td class="text-center">13,000.00</td>` : ''}
-                ${showJPY ? `<td class="text-center">13,000.00</td>` : ''}
+                ${showEUR ? `<td class="text-center">${formatPesos(totalCBSecMarketValue[2])}</td>` : ''}
+                ${showCNY ? `<td class="text-center">${formatPesos(totalCBSecMarketValue[3])}</td>` : ''}
+                ${showJPY ? `<td class="text-center">${formatPesos(totalCBSecMarketValue[4])}</td>` : ''}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold uppercase font-weight-700">Grand Total</td>
                 <td class="fw-bold text-center">${formatPesos(totalBankPortfolio[0] + totalTrustPortfolio[0] + totalCBSecMarketValue[0])}</td>
                 ${showUSD ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio[1] + totalTrustPortfolio[1] + totalCBSecMarketValue[1])}</td>` : ''}
-                ${showEUR ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
-                ${showCNY ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
-                ${showJPY ? `<td class="fw-bold text-center">28,000.00</td>` : ''}
+                ${showEUR ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio[2] + totalTrustPortfolio[2] + totalCBSecMarketValue[2])}</td>` : ''}
+                ${showCNY ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio[3] + totalTrustPortfolio[3] + totalCBSecMarketValue[3])}</td>` : ''}
+                ${showJPY ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio[4] + totalTrustPortfolio[4] + totalCBSecMarketValue[4])}</td>` : ''}
               </tr>
             </tbody>
           </table>

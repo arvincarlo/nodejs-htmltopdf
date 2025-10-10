@@ -70,7 +70,11 @@ router.post('/users', async (req, res) => {
     const footerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
     );
-    
+
+    // GET All the currency of the user
+    const currencyCodes = await getAllUserCurrency(data.cifNumber, data.month, data.year);
+    const hasForeignCurrency = Array.isArray(currencyCodes) && currencyCodes.some(c => c !== 0);
+
     // GET deposits
     const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
     const totalTimeDeposits = await getAllTimeDeposits(data.cifNumber);
@@ -79,12 +83,20 @@ router.post('/users', async (req, res) => {
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
     const trustEquities = await getAllTrustEquities(data.cifNumber);
     const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
-    
+
     // GET summary and pie chart
     const portfolioPieChart = await generatePortfolioPieChart(data);
-    const totalBankPortfolio = await getFcbsDepositsByCifNumber(data.cifNumber, data.month, data.year);
-    const totalTrustPortfolio = await getTotalTrustPortfolio(data.cifNumber);
-    const totalCBCSecMarketValue = CBSecMapping.reduce((acc, item) => acc + (item.marketValue || 0), 0);
+
+    // Getting the value per currency
+    const totalTrustPortfolio = {};
+    const totalBankPortfolio = {};
+    const totalCBSecMarketValue = {};
+    for (const currencyInt of currencyCodes) {
+      totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
+      totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
+      totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
+    }
+
     const overallTotalValue =
       (data.unitTrustsValue || 0) +
       (data.structuredProductsValue || 0) +
@@ -95,7 +107,7 @@ router.post('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBCSecMarketValue, prevMonthAUM } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes } },
       { component: page2, props: { totalDeposits, totalTimeDeposits} },
       { component: page3, props: { transactionHistory } },
       { component: page4 },
