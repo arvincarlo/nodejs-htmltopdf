@@ -75,9 +75,21 @@ router.post('/users', async (req, res) => {
     const currencyCodes = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     const hasForeignCurrency = Array.isArray(currencyCodes) && currencyCodes.some(c => c !== 0);
 
-    // GET deposits
-    const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
-    const totalTimeDeposits = await getAllTimeDeposits(data.cifNumber);
+    // Prepare per-currency objects
+    const totalDeposits = {};
+    const totalTimeDeposits = {};
+    const totalTrustPortfolio = {};
+    const totalBankPortfolio = {};
+    const totalCBSecMarketValue = {};
+
+    for (const currencyInt of currencyCodes) {
+      totalDeposits[currencyInt] = await getAllDeposits(data.cifNumber, data.month, data.year, currencyInt);
+      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, currencyInt);
+      totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
+      totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
+      totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
+    }
+
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
     const trustDeposits = await getAllTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
@@ -86,16 +98,6 @@ router.post('/users', async (req, res) => {
 
     // GET summary and pie chart
     const portfolioPieChart = await generatePortfolioPieChart(data);
-
-    // Getting the value per currency
-    const totalTrustPortfolio = {};
-    const totalBankPortfolio = {};
-    const totalCBSecMarketValue = {};
-    for (const currencyInt of currencyCodes) {
-      totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
-      totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
-      totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
-    }
 
     const overallTotalValue =
       (data.unitTrustsValue || 0) +
@@ -108,7 +110,7 @@ router.post('/users', async (req, res) => {
     // ... Pages definition
     const pages = [
       { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes } },
-      { component: page2, props: { totalDeposits, totalTimeDeposits} },
+      { component: page2, props: { totalDeposits, totalTimeDeposits } },
       { component: page3, props: { transactionHistory } },
       { component: page4 },
       { component: page5 },
@@ -173,8 +175,6 @@ router.get('/users', async (req, res) => {
     const hasForeignCurrency = Array.isArray(currencyCodes) && currencyCodes.some(c => c !== 0);
     
     // GET deposits
-    const totalDeposits = await getAllDeposits(data.cifNumber, data.month, data.year);
-    const totalTimeDeposits = await getAllTimeDeposits(data.cifNumber);
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
     const trustDeposits = await getAllTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
@@ -183,16 +183,22 @@ router.get('/users', async (req, res) => {
     
     // GET summary and pie chart
     const portfolioPieChart = await generatePortfolioPieChart(data);
-
+    
     // Getting the value per currency
     const totalTrustPortfolio = {};
     const totalBankPortfolio = {};
     const totalCBSecMarketValue = {};
+    const totalDeposits = {};
+    const totalTimeDeposits = {}
     for (const currencyInt of currencyCodes) {
+      totalDeposits[currencyInt] = await getAllDeposits(data.cifNumber, data.month, data.year, currencyInt);
+      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, currencyInt);
       totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
       totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
       totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
     }
+
+    console.log(totalTimeDeposits)
     
     const overallTotalValue =
       (data.unitTrustsValue || 0) +

@@ -132,7 +132,7 @@ export async function getTotalCBCSecMarketValue(cifNumber) {
  * Example usage:
  *   const deposits = await getAllDeposits('R23500000', 'Jun', 2024);
  */
-export async function getAllDeposits(cifNumber, month, year) {
+export async function getAllDeposits(cifNumber, month, year, currency) {
   try {
     await sql.connect(config);
     const query = `
@@ -147,6 +147,7 @@ export async function getAllDeposits(cifNumber, month, year) {
       WHERE [cifNumber] = @cifNumber
         AND MONTH([dateCovered]) = @monthNum
         AND YEAR([dateCovered]) = @yearNum
+        ${currency !== undefined ? 'AND [currency] = @currency' : ''}
     `;
 
     // Convert month shortname to month number (jun -> 6)
@@ -157,6 +158,9 @@ export async function getAllDeposits(cifNumber, month, year) {
     request.input('cifNumber', sql.VarChar, cifNumber);
     request.input('monthNum', sql.VarChar, monthNum);
     request.input('yearNum', sql.VarChar, yearNum);
+    if (currency !== undefined) {
+      request.input('currency', sql.Int, currency);
+    }
 
     const result = await request.query(query); 
     await sql.close();
@@ -169,7 +173,7 @@ export async function getAllDeposits(cifNumber, month, year) {
 }
 
 
-export async function getAllTimeDeposits(cifNumber) {
+export async function getAllTimeDeposits(cifNumber, currency) {
   try {
     await sql.connect(config);
     const query = `
@@ -177,18 +181,20 @@ export async function getAllTimeDeposits(cifNumber) {
         *
       FROM FcbsTimeDeposits
       WHERE [cifNumber] = @cifNumber
+        ${currency !== undefined ? 'AND [currency] = @currency' : ''}
     `;
 
-    // Convert month shortname to month number (jun -> 6)
     const request = new sql.Request();
-
     request.input('cifNumber', sql.VarChar, cifNumber);
+    if (currency !== undefined) {
+      request.input('currency', sql.Int, currency);
+    }
 
-    const result = await request.query(query); 
+    const result = await request.query(query);
     await sql.close();
 
     return result.recordset;
-  }  catch (error) {
+  } catch (error) {
     console.error('SQL error: ', error);
     return 0;
   }

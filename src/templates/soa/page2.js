@@ -1,6 +1,7 @@
 import { formatPesos, formatDateToShort } from '../../helpers/utils.js';
+import { currencyConfig } from '../../constants/currency.js';
 
-export default ({totalDeposits, totalTimeDeposits}) => `
+export default ({ totalDeposits = {}, totalTimeDeposits = {} }) => `
   <div class="page-header">
     <span>Bank Portfolio</span>
   </div>
@@ -20,64 +21,38 @@ export default ({totalDeposits, totalTimeDeposits}) => `
           </tr>
         </thead>
         <tbody style="font-size:14px;">
-          <!-- PHP Section -->
-          <tr>
-            <td colspan="6" style="padding:4px; font-weight:bold; text-align:left;">PHP</td>
-          </tr>
-          ${totalDeposits.map(item => (
-            `<tr>
-              <td style="text-align:left;">${item.accountName || ""}</td>
-              <td>${item.branch || ""}</td>
-              <td>${item.productDescription || ""}</td>
-              <td>${item.referenceNumber || ""}</td>
-              <td>${formatPesos(item.currentBalance) || ""}</td>
-              <td>${formatPesos(item.availableBalance) || ""}</td>
-            </tr>`
-          )).join('')}
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="highlight">TOTAL</td>
-            <td class="highlight">${formatPesos(totalDeposits.reduce((acc, item) => acc + item.currentBalance, 0))}</td>
-            <td class="highlight">${formatPesos(totalDeposits.reduce((acc, item) => acc + item.availableBalance, 0))}</td>
-          </tr>
-          <!-- USD Section -->
-          <tr>
-            <td colspan="6" style="padding:4px; font-weight:bold; text-align:left;">USD</td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">XXX</td>
-            <td>Makati Main</td>
-            <td>Checking</td>
-            <td>111111</td>
-            <td>2.00</td>
-            <td>2.00</td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">XXX</td>
-            <td>Makati Main</td>
-            <td>Savings</td>
-            <td>111111</td>
-            <td>3.00</td>
-            <td>3.00</td>
-          </tr>
-          <tr>
-            <td style="text-align:left;">XXX</td>
-            <td>Makati Main</td>
-            <td>Savings</td>
-            <td>111111</td>
-            <td>4.00</td>
-            <td>4.00</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="highlight">TOTAL</td>
-            <td class="highlight">14.00</td>
-            <td class="highlight">14.00</td>
-          </tr>
+          ${
+            Object.keys(totalDeposits)
+              .sort((a, b) => Number(a) - Number(b))
+              .map(currencyCode => {
+                const items = totalDeposits[currencyCode];
+                if (!items || !items.length) return '';
+                const currencyLabel = currencyConfig[currencyCode] || currencyCode;
+                return `
+                  <tr>
+                    <td colspan="6" style="padding:4px; font-weight:bold; text-align:left;">${currencyLabel}</td>
+                  </tr>
+                  ${items.map(item => `
+                    <tr>
+                      <td style="text-align:left;">${item.accountName || ""}</td>
+                      <td>${item.branch || ""}</td>
+                      <td>${item.productDescription || ""}</td>
+                      <td>${item.referenceNumber || ""}</td>
+                      <td>${formatPesos(item.currentBalance) || ""}</td>
+                      <td>${formatPesos(item.availableBalance) || ""}</td>
+                    </tr>
+                  `).join('')}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight">TOTAL</td>
+                    <td class="highlight">${formatPesos(items.reduce((acc, item) => acc + (item.currentBalance || 0), 0))}</td>
+                    <td class="highlight">${formatPesos(items.reduce((acc, item) => acc + (item.availableBalance || 0), 0))}</td>
+                  </tr>
+                `;
+              }).join('')
+          }
         </tbody>
       </table>
     </div>
@@ -100,36 +75,46 @@ export default ({totalDeposits, totalTimeDeposits}) => `
           </tr>
         </thead>
         <tbody style="font-size:14px;">
-          <!-- PHP Section -->
-          <tr>
-            <td colspan="10" style="text-align:left; font-weight:bold;">PHP</td>
-          </tr>
-          ${totalTimeDeposits.map(item => (`
-            <tr>
-              <td>${item.accountName || ""}</td>
-              <td>${item.branch || ""}</td>
-              <td>${item.productDescription || ""}</td>
-              <td>${item.accountNumber || ""}</td>
-              <td>${formatDateToShort(item.valueDate) || ""}</td>
-              <td>${formatPesos(item.principalAmount) || ""}</td>
-              <td>${item.interestRate || ""}</td>
-              <td>${item.term || ""}</td>
-              <td>${formatDateToShort(item.maturityDate) || ""}</td>
-              <td>${formatPesos(item.maturityValue) || ""}</td>
-            </tr>
-          `)).join('')}
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="highlight">TOTAL</td>
-            <td class="highlight">${formatPesos(totalTimeDeposits.reduce((sum, item) => sum + (item.principalAmount || 0), 0))}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="highlight">${formatPesos(totalTimeDeposits.reduce((sum, item) => sum + (item.maturityValue || 0), 0))}</td>
-          </tr>
+          ${
+            Object.keys(totalTimeDeposits)
+              .sort((a, b) => Number(a) - Number(b))
+              .map(currencyCode => {
+                const items = totalTimeDeposits[currencyCode];
+                if (!items || !items.length) return '';
+                const currencyLabel = currencyConfig[currencyCode] || currencyCode;
+                return `
+                  <tr>
+                    <td colspan="10" style="text-align:left; font-weight:bold;">${currencyLabel}</td>
+                  </tr>
+                  ${items.map(item => `
+                    <tr>
+                      <td>${item.accountName || ""}</td>
+                      <td>${item.branch || ""}</td>
+                      <td>${item.productDescription || ""}</td>
+                      <td>${item.accountNumber || ""}</td>
+                      <td>${formatDateToShort(item.valueDate) || ""}</td>
+                      <td>${formatPesos(item.principalAmount) || ""}</td>
+                      <td>${item.interestRate || ""}</td>
+                      <td>${item.term || ""}</td>
+                      <td>${formatDateToShort(item.maturityDate) || ""}</td>
+                      <td>${formatPesos(item.maturityValue) || ""}</td>
+                    </tr>
+                  `).join('')}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight">TOTAL</td>
+                    <td class="highlight">${formatPesos(items.reduce((sum, item) => sum + (item.principalAmount || 0), 0))}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="highlight">${formatPesos(items.reduce((sum, item) => sum + (item.maturityValue || 0), 0))}</td>
+                  </tr>
+                `;
+              }).join('')
+          }
         </tbody>
       </table>
     </div>
