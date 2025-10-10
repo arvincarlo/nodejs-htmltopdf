@@ -1,14 +1,7 @@
 
 import sql from 'mssql/msnodesqlv8.js';
-
-const config = {
-  server: "(localdb)\\MSSQLLocalDB",
-  database: "WealthAppDB1.0",
-  driver: "msnodesqlv8",
-  options: {
-    trustedConnection: true
-  }
-}
+import { currencyConfig } from '../constants/currency.js';
+import config from '../config/db.js';
 
 /**
  * Retrieves the total available balance from FcbsDeposits for a given cifNumber, month, and year,
@@ -400,6 +393,110 @@ export async function getAllUserCurrency(cifNumber, month, year) {
 
     return currencyCodes;
   }  catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
+
+export async function getTotalBankPortfolioPerCurrency(cifNumber, month, year, currency) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT
+        ISNULL(SUM(fd.[availableBalance]), 0) AS totalAvailableBalance,
+        (
+          SELECT ISNULL(SUM([principalAmount]), 0)
+          FROM FcbsTimeDeposits
+          WHERE [cifNumber] = @cifNumber AND [currency] = @currency
+        ) AS totalPrincipalAmount
+      FROM FcbsDeposits fd
+      WHERE fd.[cifNumber] = @cifNumber
+        AND MONTH(fd.[dateCovered]) = @monthNum
+        AND YEAR(fd.[dateCovered]) = @yearNum
+        AND fd.[currency] = @currency
+    `;
+
+    // Convert month shortname to month number (jun -> 6)
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
+
+    const request = new sql.Request();
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.VarChar, monthNum);
+    request.input('yearNum', sql.VarChar, yearNum);
+    request.input('currency', sql.Int, currency);
+
+    const result = await request.query(query);
+    await sql.close();
+
+    console.log('result for total bank portfolio per currency:', result);
+
+    const row = result.recordset[0] || {};
+    // Return the sum of availableBalance and principalAmount
+    return (row.totalAvailableBalance || 0) + (row.totalPrincipalAmount || 0);
+  } catch (error) {
+    console.error('SQL error:', error);
+    return 0;
+  }
+}
+
+export async function getTotalTrustPortfolioPerCurrency(cifNumber, currency) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT
+        ISNULL((SELECT SUM(faceAmount) FROM TrustFixedIncome WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalFixedIncome,
+        ISNULL((SELECT SUM(purchaseAmount) FROM TrustEquities WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalEquities,
+        ISNULL((SELECT SUM(purchaseAmount) FROM TrustUitf WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalUitf,
+        ISNULL((SELECT SUM(principalAmount) FROM TrustDeposits WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalDeposits
+    `;
+    const request = new sql.Request();
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('currency', sql.Int, currency);
+    const result = await request.query(query);
+    await sql.close();
+
+    const row = result.recordset[0] || {};
+
+    // Sum all fields for the total
+    return (
+      (row.totalDeposits || 0) +
+      (row.totalFixedIncome || 0) +
+      (row.totalEquities || 0) +
+      (row.totalUitf || 0)
+    );
+  } catch (error) {
+    console.error('SQL error:', error);
+    return 0;
+  }
+}
+
+export async function getTotalCBSecMarketValue(cifNumber, currency) {
+  try {
+    const currencyLabel = currencyConfig[currency];
+    
+    await sql.connect(config);
+    const query = `
+      SELECT *
+      FROM CBSecMapping
+      WHERE accountCode IN (
+        SELECT AccountNumber
+        FROM AccountDataTables
+        WHERE [Cif] = @Cif
+      )
+      AND accountType = @currencyLabel
+    `;
+      
+    const request = new sql.Request();
+    request.input('Cif', sql.VarChar, cifNumber);
+    request.input('currencyLabel', sql.VarChar, currencyLabel);
+    
+    const result = await request.query(query);
+    await sql.close();
+      
+    console.log('currencyLabel', currencyLabel);
+    return result.recordset.reduce((acc, row) => acc + (row.marketValue || 0), 0);
+  } catch (error) {
     console.error('SQL error: ', error);
     return 0;
   }
