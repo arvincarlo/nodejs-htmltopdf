@@ -507,3 +507,31 @@ export async function getTotalCBSecMarketValue(cifNumber, currency) {
     return 0;
   }
 }
+
+export async function getLatestCurrencyRates() {
+  const rates = {};
+  await sql.connect(config);
+
+  const query = `
+    SELECT currencyCode, rate
+      FROM CurrencyExchangeRates r
+      WHERE effectiveDate = (
+        SELECT MAX(effectiveDate)
+        FROM CurrencyExchangeRates r2
+        WHERE r2.currencyCode = r.currencyCode
+      )
+  `;
+
+  const request = new sql.Request();
+  const result = await request.query(query);
+
+  for (const row of result.recordset) {
+    for (const [intCode, code] of Object.entries(currencyConfig)) {
+      if (row.currencyCode === code) {
+        rates[intCode] = row.rate;
+        break;
+      }
+    }
+  }
+  return rates;
+}

@@ -1,4 +1,5 @@
 import { formatPesos, getPercentage, getPercentageChange, getLastDayOfMonth } from '../../helpers/utils.js';
+import { currencyConfig } from '../../constants/currency.js';
 
 export default ({
   month,
@@ -15,7 +16,8 @@ export default ({
   unitTrustsValue,
   portfolioPieChart,
   prevMonthAUM,
-  currency
+  currency,
+  latestCurrencyRates
 }) => {
   const showUSD = currency.includes(1);
   const showEUR = currency.includes(2);
@@ -204,10 +206,14 @@ export default ({
               <div class="summary-appendix-container">
                 <div class="summary-appendix text-primary">
                   <div>Foreign Currency Exchange Rates as of ${getLastDayOfMonth(month, year)}</div>
-                  ${showUSD ? `<div>1 USD - 58.00</div>` : ''}
-                  ${showEUR ? `<div>2 EUR - 67.00</div>` : ''}
-                  ${showCNY ? `<div>3 CNY - 45.00</div>` : ''}
-                  ${showJPY ? `<div>4 JPY - 50.00</div>` : ''}
+                  ${
+                    currency
+                      .filter(code => code !== 0 && currencyConfig[code] !== undefined && latestCurrencyRates[code] !== undefined)
+                      .map(code => {
+                        const rate = parseFloat(latestCurrencyRates[code]).toFixed(2);
+                        return `<div>${code} ${currencyConfig[code]} - ${rate}</div>`;
+                      }).join('')
+                  }
                 </div>
                 <img class="footer-logo" src="./images/footer-logo.png" />
               </div>

@@ -18,7 +18,8 @@ import {
   getPrevMonthAUM,
   getTotalTrustPortfolioPerCurrency,
   getTotalBankPortfolioPerCurrency,
-  getTotalCBSecMarketValue
+  getTotalCBSecMarketValue,
+  getLatestCurrencyRates
 } from "../services/users.js";
 import summaryTemplate from '../templates/soa/template.js';
 const router = express.Router();
@@ -197,9 +198,18 @@ router.get('/users', async (req, res) => {
       totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
       totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
     }
-
-    console.log(totalTimeDeposits)
     
+    // Fetch rates, and filter rates only for the user's currencies
+    const allLatestCurrencyRates = await getLatestCurrencyRates();
+    const latestCurrencyRates = {};
+    for (const code of currencyCodes) {
+      if (allLatestCurrencyRates.hasOwnProperty(code)) {
+        latestCurrencyRates[code] = allLatestCurrencyRates[code];
+      }
+    }
+
+    console.log(latestCurrencyRates);
+
     const overallTotalValue =
       (data.unitTrustsValue || 0) +
       (data.structuredProductsValue || 0) +
@@ -210,7 +220,7 @@ router.get('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates } },
       { component: page2, props: { totalDeposits, totalTimeDeposits} },
       { component: page3, props: { transactionHistory } },
       // { component: page4 },

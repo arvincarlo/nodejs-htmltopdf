@@ -5,3 +5,4 @@ export const currencyConfig = {
   3: 'CNY',
   4: 'JPY'
 };
+
