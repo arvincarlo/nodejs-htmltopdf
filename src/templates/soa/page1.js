@@ -203,7 +203,7 @@ export default ({
               </div>
               <div class="summary-appendix-container">
                 <div class="summary-appendix text-primary">
-                  <div>Foreign Currency Exchange Rates as of ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                  <div>Foreign Currency Exchange Rates as of ${getLastDayOfMonth(month, year)}</div>
                   ${showUSD ? `<div>1 USD - 58.00</div>` : ''}
                   ${showEUR ? `<div>2 EUR - 67.00</div>` : ''}
                   ${showCNY ? `<div>3 CNY - 45.00</div>` : ''}
