@@ -15,6 +15,7 @@ import {
   getAllTrustFixedIncome,
   getAllTrustEquities,
   getAllCBSecMapping,
+  oldTrustDeposits,
   getPrevMonthAUM,
   getTotalTrustPortfolioPerCurrency,
   getTotalBankPortfolioPerCurrency,
@@ -92,7 +93,7 @@ router.post('/users', async (req, res) => {
     }
 
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
-    const trustDeposits = await getAllTrustDeposits(data.cifNumber);
+    const oTrustDeposits = await oldTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
     const trustEquities = await getAllTrustEquities(data.cifNumber);
     const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
@@ -117,7 +118,7 @@ router.post('/users', async (req, res) => {
       // { component: page5 },
       // { component: page6 },
       // { component: page7 },
-      { component: page8, props: { trustDeposits } },
+      { component: page8, props: { trustDeposits: oTrustDeposits } },
       { component: page9, props: { trustFixedIncome } },
       { component: page10, props: { trustEquities } },
       // { component: page11 },
@@ -177,7 +178,7 @@ router.get('/users', async (req, res) => {
     
     // GET deposits
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
-    const trustDeposits = await getAllTrustDeposits(data.cifNumber);
+    const oTrustDeposits = await oldTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
     const trustEquities = await getAllTrustEquities(data.cifNumber);
     const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
@@ -190,14 +191,18 @@ router.get('/users', async (req, res) => {
     const totalBankPortfolio = {};
     const totalCBSecMarketValue = {};
     const totalDeposits = {};
-    const totalTimeDeposits = {}
+    const totalTimeDeposits = {};
+    const totalTrustDeposits = {};
     for (const currencyInt of currencyCodes) {
       totalDeposits[currencyInt] = await getAllDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, currencyInt);
+      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyInt);
+      totalTrustDeposits[currencyInt] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyInt);
       totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
       totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
       totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
     }
+
+    console.log('totalTrustDeposits per currency:', totalTrustDeposits);
     
     // Fetch rates, and filter rates only for the user's currencies
     const allLatestCurrencyRates = await getLatestCurrencyRates();
@@ -227,7 +232,7 @@ router.get('/users', async (req, res) => {
       // { component: page5 },
       // { component: page6 },
       // { component: page7 },
-      { component: page8, props: { trustDeposits } },
+      { component: page8, props: { trustDeposits: oTrustDeposits } },
       { component: page9, props: { trustFixedIncome } },
       { component: page10, props: { trustEquities } },
       // { component: page11 },
