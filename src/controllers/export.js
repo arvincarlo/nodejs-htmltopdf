@@ -1,3 +1,4 @@
+const router = express.Router();
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import fs from 'fs';
@@ -23,7 +24,8 @@ import {
   getLatestCurrencyRates
 } from "../services/users.js";
 import summaryTemplate from '../templates/soa/template.js';
-const router = express.Router();
+import { currencyConfig } from '../constants/currency.js';
+import { sumAvailableBalance, sumPrincipalAmount } from '../helpers/utils.js';
 
 // Import Pages
 import page1 from '../templates/soa/page1.js';
@@ -42,7 +44,6 @@ import page13 from '../templates/soa/page13.js';
 import page14 from '../templates/soa/page14.js';
 import page15 from '../templates/soa/page15.js';
 
-import { sumAvailableBalance, sumPrincipalAmount } from '../helpers/utils.js';
 
 function getBase64Image(filePath) {
   const image = fs.readFileSync(filePath);
@@ -209,7 +210,11 @@ router.get('/users', async (req, res) => {
     );
 
     // GET All the currency of the user
-    const currencyCodes = await getAllUserCurrency(data.cifNumber, data.month, data.year);
+    const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
+    const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
+
+    console.log('currency codes: ', currencyCodes);
+
     // const hasForeignCurrency = Array.isArray(currencyCodes) && currencyCodes.some(c => c !== 0);
     
     // GET deposits
@@ -229,13 +234,13 @@ router.get('/users', async (req, res) => {
     const totalDeposits = {};
     const totalTimeDeposits = {};
     const totalTrustDeposits = {};
-    for (const currencyInt of currencyCodes) {
-      totalDeposits[currencyInt] = await getAllDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTrustDeposits[currencyInt] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
-      totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
-      totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
+    for (const currencyCode of currencyCodes) {
+      totalDeposits[currencyCode] = await getAllDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      totalTimeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      totalTrustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      totalTrustPortfolio[currencyCode] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyCode);
+      totalBankPortfolio[currencyCode] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyCode);
+      totalCBSecMarketValue[currencyCode] = await getTotalCBSecMarketValue(data.cifNumber, currencyCode);
     }
     
     // Fetch rates, and filter rates only for the user's currencies
@@ -253,7 +258,7 @@ router.get('/users', async (req, res) => {
         ...Object.keys(totalDeposits),
         ...Object.keys(totalTimeDeposits),
         ...Object.keys(totalTrustDeposits)
-      ].map(Number))
+      ])
     );
 
     let moneyMarket = 0;
@@ -269,6 +274,9 @@ router.get('/users', async (req, res) => {
       const rate = code === 0 ? 1 : (latestCurrencyRates[code] || 1);
       moneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
     }
+
+    console.log('currency codes ', currencyCodes);
+    console.log('latest currency rates ', allLatestCurrencyRates);
 
     // const overallTotalValue =
     //   (data.unitTrustsValue || 0) +

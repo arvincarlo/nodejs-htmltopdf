@@ -159,7 +159,7 @@ export async function getAllDeposits(cifNumber, month, year, currency) {
     request.input('monthNum', sql.VarChar, monthNum);
     request.input('yearNum', sql.VarChar, yearNum);
     if (currency !== undefined) {
-      request.input('currency', sql.Int, currency);
+      request.input('currency', sql.VarChar, currency);
     }
 
     const result = await request.query(query); 
@@ -195,7 +195,7 @@ export async function getAllTimeDeposits(cifNumber, month, year, currency) {
     request.input('yearNum', sql.VarChar, yearNum);
 
     if (currency !== undefined) {
-      request.input('currency', sql.Int, currency);
+      request.input('currency', sql.VarChar, currency);
     }
 
     const result = await request.query(query);
@@ -230,7 +230,7 @@ export async function getAllTrustDeposits(cifNumber, month, year, currency) {
     request.input('yearNum', sql.VarChar, yearNum);
 
     if (currency !== undefined) {
-      request.input('currency', sql.Int, currency);
+      request.input('currency', sql.VarChar, currency);
     }
 
     const result = await request.query(query);
@@ -482,7 +482,7 @@ export async function getTotalBankPortfolioPerCurrency(cifNumber, month, year, c
     request.input('cifNumber', sql.VarChar, cifNumber);
     request.input('monthNum', sql.VarChar, monthNum);
     request.input('yearNum', sql.VarChar, yearNum);
-    request.input('currency', sql.Int, currency);
+    request.input('currency', sql.VarChar, currency);
 
     const result = await request.query(query);
     await sql.close();
@@ -508,7 +508,7 @@ export async function getTotalTrustPortfolioPerCurrency(cifNumber, currency) {
     `;
     const request = new sql.Request();
     request.input('cifNumber', sql.VarChar, cifNumber);
-    request.input('currency', sql.Int, currency);
+    request.input('currency', sql.VarChar, currency);
     const result = await request.query(query);
     await sql.close();
 
@@ -529,8 +529,6 @@ export async function getTotalTrustPortfolioPerCurrency(cifNumber, currency) {
 
 export async function getTotalCBSecMarketValue(cifNumber, currency) {
   try {
-    const currencyLabel = currencyConfig[currency];
-    
     await sql.connect(config);
     const query = `
       SELECT *
@@ -540,12 +538,12 @@ export async function getTotalCBSecMarketValue(cifNumber, currency) {
         FROM AccountDataTables
         WHERE [Cif] = @Cif
       )
-      AND accountType = @currencyLabel
+      AND accountType = @currency
     `;
       
     const request = new sql.Request();
     request.input('Cif', sql.VarChar, cifNumber);
-    request.input('currencyLabel', sql.VarChar, currencyLabel);
+    request.input('currency', sql.VarChar, currency);
     
     const result = await request.query(query);
     await sql.close();
@@ -575,9 +573,9 @@ export async function getLatestCurrencyRates() {
   const result = await request.query(query);
 
   for (const row of result.recordset) {
-    for (const [intCode, code] of Object.entries(currencyConfig)) {
+    for (const [code, intCode] of Object.entries(currencyConfig)) {
       if (row.currencyCode === code) {
-        rates[intCode] = row.rate;
+        rates[code] = row.rate;
         break;
       }
     }
