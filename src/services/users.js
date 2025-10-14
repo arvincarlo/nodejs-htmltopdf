@@ -438,8 +438,6 @@ export async function getAllUserCurrency(cifNumber, month, year) {
     // map the currencies to return an array
     const currencyCodes = result.recordset.map(c => c.currency);
 
-    console.log('currencies', currencyCodes);
-
     return currencyCodes;
   }  catch (error) {
     console.error('SQL error: ', error);
@@ -477,8 +475,6 @@ export async function getTotalBankPortfolioPerCurrency(cifNumber, month, year, c
 
     const result = await request.query(query);
     await sql.close();
-
-    console.log('result for total bank portfolio per currency:', result);
 
     const row = result.recordset[0] || {};
     // Return the sum of availableBalance and principalAmount
@@ -543,7 +539,6 @@ export async function getTotalCBSecMarketValue(cifNumber, currency) {
     const result = await request.query(query);
     await sql.close();
       
-    console.log('currencyLabel', currencyLabel);
     return result.recordset.reduce((acc, row) => acc + (row.marketValue || 0), 0);
   } catch (error) {
     console.error('SQL error: ', error);

@@ -17,7 +17,8 @@ export default ({
   portfolioPieChart,
   prevMonthAUM,
   currency,
-  latestCurrencyRates
+  latestCurrencyRates,
+  moneyMarket
 }) => {
   const showUSD = currency.includes(1);
   const showEUR = currency.includes(2);
@@ -159,8 +160,8 @@ export default ({
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Money Market</td>
-                        <td class="text-center">${formatPesos(moneyMarketValue)}</td>
-                        <td class="text-center">${getPercentage(moneyMarketValue, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(moneyMarket)}</td>
+                        <td class="text-center">${getPercentage(moneyMarket, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Fixed Income</td>

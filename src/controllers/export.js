@@ -42,6 +42,8 @@ import page13 from '../templates/soa/page13.js';
 import page14 from '../templates/soa/page14.js';
 import page15 from '../templates/soa/page15.js';
 
+import { sumAvailableBalance, sumPrincipalAmount } from '../helpers/utils.js';
+
 function getBase64Image(filePath) {
   const image = fs.readFileSync(filePath);
   const ext = filePath.split('.').pop();
@@ -201,8 +203,6 @@ router.get('/users', async (req, res) => {
       totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
       totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
     }
-
-    console.log('totalTrustDeposits per currency:', totalTrustDeposits);
     
     // Fetch rates, and filter rates only for the user's currencies
     const allLatestCurrencyRates = await getLatestCurrencyRates();
@@ -213,7 +213,28 @@ router.get('/users', async (req, res) => {
       }
     }
 
-    console.log(latestCurrencyRates);
+    // Get all currency codes present in any of the objects
+    const allCurrencies = Array.from(
+      new Set([
+        ...Object.keys(totalDeposits),
+        ...Object.keys(totalTimeDeposits),
+        ...Object.keys(totalTrustDeposits)
+      ].map(Number))
+    );
+
+    let moneyMarket = 0;
+    for (const code of allCurrencies) {
+      // Deposit CASA
+      const depositPHP = sumAvailableBalance(totalDeposits[code]);
+      // Time Deposit
+      const timeDepPHP = sumPrincipalAmount(totalTimeDeposits[code]);
+      // Trust TD
+      const trustDepPHP = sumPrincipalAmount(totalTrustDeposits[code]);
+
+      // Convert to PHP if not PHP (code 0)
+      const rate = code === 0 ? 1 : (latestCurrencyRates[code] || 1);
+      moneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
+    }
 
     const overallTotalValue =
       (data.unitTrustsValue || 0) +
@@ -225,7 +246,7 @@ router.get('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, moneyMarket } },
       { component: page2, props: { totalDeposits, totalTimeDeposits} },
       { component: page3, props: { transactionHistory } },
       // { component: page4 },
