@@ -89,3 +89,98 @@ FCBS Xchange rate
 
 confirm to ms laurice if 4 lang i di display
 confirm kung anong wealth lang si client - portfolio ni client
+
+
+
+
+
+
+// Assume these are your data objects:
+const totalAvailableBalance = { 0: 10000, 1: 2000 }; // 0: PHP, 1: USD, etc.
+const totalPrincipalAmountTimeDeposit = { 0: 5000, 1: 1000 };
+const totalPrincipalAmountTrustDeposit = { 0: 3000, 1: 500 };
+const exchangeRates = { 1: 58.00, 2: 67.00, 3: 45.00, 4: 50.00 }; // 1: USD, etc.
+
+// Helper to get value in PHP for a currency
+function toPHP(amount, currencyCode) {
+  if (currencyCode === 0) return amount; // PHP
+  return amount * (exchangeRates[currencyCode] || 1);
+}
+
+// Calculate Money Market
+function calculateMoneyMarket(
+  totalAvailableBalance,
+  totalPrincipalAmountTimeDeposit,
+  totalPrincipalAmountTrustDeposit,
+  exchangeRates
+) {
+  let moneyMarket = 0;
+  // Get all currency codes present in any of the objects
+  const allCurrencies = Array.from(
+    new Set([
+      ...Object.keys(totalAvailableBalance),
+      ...Object.keys(totalPrincipalAmountTimeDeposit),
+      ...Object.keys(totalPrincipalAmountTrustDeposit)
+    ].map(Number))
+  );
+  for (const code of allCurrencies) {
+    moneyMarket += toPHP(totalAvailableBalance[code] || 0, code);
+    moneyMarket += toPHP(totalPrincipalAmountTimeDeposit[code] || 0, code);
+    moneyMarket += toPHP(totalPrincipalAmountTrustDeposit[code] || 0, code);
+  }
+  return moneyMarket;
+}
+
+// Example usage:
+const moneyMarket = calculateMoneyMarket(
+  totalAvailableBalance,
+  totalPrincipalAmountTimeDeposit,
+  totalPrincipalAmountTrustDeposit,
+  exchangeRates
+);
+
+console.log('Money Market (PHP):', moneyMarket.toFixed(2));
+
+
+
+-----------------------------
+
+
+// Example input data (replace with your actual data)
+const totalDeposits = {/* ...as provided... */};
+const totalTimeDeposits = {/* ...as provided... */};
+const totalTrustDeposits = {/* ...as provided... */};
+const latestCurrencyRates = { 1: 58.00, 2: 67.00, 3: 45.00, 4: 50.00 }; // Example rates
+
+function sumAvailableBalance(deposits) {
+  return (deposits || []).reduce((sum, d) => sum + (d.availableBalance || 0), 0);
+}
+function sumPrincipalAmount(deposits) {
+  return (deposits || []).reduce((sum, d) => sum + (d.principalAmount || 0), 0);
+}
+
+// Get all currency codes present in any of the objects
+const allCurrencies = Array.from(
+  new Set([
+    ...Object.keys(totalDeposits),
+    ...Object.keys(totalTimeDeposits),
+    ...Object.keys(totalTrustDeposits)
+  ].map(Number))
+);
+
+// Calculate money market in PHP
+let moneyMarket = 0;
+for (const code of allCurrencies) {
+  // Deposit CASA
+  const depositPHP = sumAvailableBalance(totalDeposits[code]);
+  // Time Deposit
+  const timeDepPHP = sumPrincipalAmount(totalTimeDeposits[code]);
+  // Trust TD
+  const trustDepPHP = sumPrincipalAmount(totalTrustDeposits[code]);
+
+  // Convert to PHP if not PHP (code 0)
+  const rate = code === 0 ? 1 : (latestCurrencyRates[code] || 1);
+  moneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
+}
+
+console.log('Money Market (PHP):', moneyMarket.toFixed(2));

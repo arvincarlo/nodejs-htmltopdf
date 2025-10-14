@@ -85,10 +85,12 @@ router.post('/users', async (req, res) => {
     const totalTrustPortfolio = {};
     const totalBankPortfolio = {};
     const totalCBSecMarketValue = {};
+    const totalTrustDeposits = {};
 
     for (const currencyInt of currencyCodes) {
       totalDeposits[currencyInt] = await getAllDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, currencyInt);
+      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyInt);
+      totalTrustDeposits[currencyInt] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyInt);
       totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
       totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
       totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
@@ -103,6 +105,38 @@ router.post('/users', async (req, res) => {
     // GET summary and pie chart
     const portfolioPieChart = await generatePortfolioPieChart(data);
 
+    // Fetch rates, and filter rates only for the user's currencies
+    const allLatestCurrencyRates = await getLatestCurrencyRates();
+    const latestCurrencyRates = {};
+    for (const code of currencyCodes) {
+      if (allLatestCurrencyRates.hasOwnProperty(code)) {
+        latestCurrencyRates[code] = allLatestCurrencyRates[code];
+      }
+    }
+
+    // Get all currency codes present in any of the objects
+    const allCurrencies = Array.from(
+      new Set([
+        ...Object.keys(totalDeposits),
+        ...Object.keys(totalTimeDeposits),
+        ...Object.keys(totalTrustDeposits)
+      ].map(Number))
+    );
+
+    let moneyMarket = 0;
+    for (const code of allCurrencies) {
+      // Deposit CASA
+      const depositPHP = sumAvailableBalance(totalDeposits[code]);
+      // Time Deposit
+      const timeDepPHP = sumPrincipalAmount(totalTimeDeposits[code]);
+      // Trust TD
+      const trustDepPHP = sumPrincipalAmount(totalTrustDeposits[code]);
+
+      // Convert to PHP if not PHP (code 0)
+      const rate = code === 0 ? 1 : (latestCurrencyRates[code] || 1);
+      moneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
+    }
+
     const overallTotalValue =
       (data.unitTrustsValue || 0) +
       (data.structuredProductsValue || 0) +
@@ -113,8 +147,8 @@ router.post('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes } },
-      { component: page2, props: { totalDeposits, totalTimeDeposits } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, moneyMarket } },
+      { component: page2, props: { totalDeposits, totalTimeDeposits, totalTrustDeposits } },
       { component: page3, props: { transactionHistory } },
       // { component: page4 },
       // { component: page5 },
@@ -176,7 +210,7 @@ router.get('/users', async (req, res) => {
 
     // GET All the currency of the user
     const currencyCodes = await getAllUserCurrency(data.cifNumber, data.month, data.year);
-    const hasForeignCurrency = Array.isArray(currencyCodes) && currencyCodes.some(c => c !== 0);
+    // const hasForeignCurrency = Array.isArray(currencyCodes) && currencyCodes.some(c => c !== 0);
     
     // GET deposits
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
@@ -236,12 +270,19 @@ router.get('/users', async (req, res) => {
       moneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
     }
 
+    // const overallTotalValue =
+    //   (data.unitTrustsValue || 0) +
+    //   (data.structuredProductsValue || 0) +
+    //   (data.equitiesValue || 0) +
+    //   (data.fixedIncomeValue || 0) +
+    //   (data.moneyMarketValue || 0);
+    // const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
     const overallTotalValue =
       (data.unitTrustsValue || 0) +
       (data.structuredProductsValue || 0) +
       (data.equitiesValue || 0) +
       (data.fixedIncomeValue || 0) +
-      (data.moneyMarketValue || 0);
+      (moneyMarket || 0);
     const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
 
     // ... Pages definition

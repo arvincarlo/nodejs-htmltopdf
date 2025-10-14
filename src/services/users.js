@@ -415,12 +415,23 @@ export async function getPrevMonthAUM(cifNumber, month, year) {
 export async function getAllUserCurrency(cifNumber, month, year) {
   try {
     await sql.connect(config);
+
+    // Get currencies from FcbsDeposits, FcbsTimeDeposits, and TrustDeposits for the given cifNumber/month/year
     const query = `
-      SELECT DISTINCT [currency]
-      FROM FcbsDeposits
-      WHERE [cifNumber] = @cifNumber
-        AND MONTH([dateCovered]) = @monthNum
-        AND YEAR([dateCovered]) = @yearNum
+      SELECT DISTINCT [currency] FROM FcbsDeposits
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([dateCovered]) = @monthNum
+          AND YEAR([dateCovered]) = @yearNum
+      UNION
+      SELECT DISTINCT [currency] FROM FcbsTimeDeposits
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNum
+      UNION
+      SELECT DISTINCT [currency] FROM TrustDeposits
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNum
     `;
 
     // Convert month shortname to month number (jun -> 6)
@@ -432,14 +443,14 @@ export async function getAllUserCurrency(cifNumber, month, year) {
     request.input('monthNum', sql.VarChar, monthNum);
     request.input('yearNum', sql.VarChar, yearNum);
 
-    const result = await request.query(query); 
+    const result = await request.query(query);
     await sql.close();
 
     // map the currencies to return an array
     const currencyCodes = result.recordset.map(c => c.currency);
 
     return currencyCodes;
-  }  catch (error) {
+  } catch (error) {
     console.error('SQL error: ', error);
     return 0;
   }
