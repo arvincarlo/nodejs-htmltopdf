@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import express from "express";
 import fs from 'fs';
 import path from 'path';
-import { generatePortfolioPieChart } from "../helpers/chartCanvas.js";
+import { generatePortfolioPieChart, generateCurrencyPieChart } from "../helpers/chartCanvas.js";
 import htmlToPDF from "../helpers/html-to-pdf.js";
 import { 
   getAllUserCurrency,
@@ -326,6 +326,8 @@ router.get('/users', async (req, res) => {
       totalTrustUitf
     }
     const portfolioPieChart = await generatePortfolioPieChart(pieChartData);
+
+    const currencyPieChart = await generateCurrencyPieChart(latestCurrencyRates);
     
     console.log('currency codes ', currencyCodes);
     console.log('latest currency rates ', allLatestCurrencyRates);
@@ -340,7 +342,7 @@ router.get('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, totalStructuredProducts, totalTrustUitf } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, totalStructuredProducts, totalTrustUitf, currencyPieChart } },
       { component: page2, props: { fcbsDeposits, timeDeposits} },
       // { component: page3, props: { transactionHistory } },
       // { component: page4 },

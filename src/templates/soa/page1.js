@@ -17,7 +17,8 @@ export default ({
   totalFixedIncome,
   totalEquities,
   totalStructuredProducts,
-  totalTrustUitf
+  totalTrustUitf,
+  currencyPieChart
 }) => {
   const showUSD = currency.includes('USD');
   const showEUR = currency.includes('EUR');
@@ -198,7 +199,7 @@ export default ({
                 <div class="flex">
                   <div class="flex align-center justify-center -mt-6 -ml-2">
                     <div class="pie-chart-container">
-                        <img src="${portfolioPieChart}" alt="Portfolio Pie Chart" width="420" height="420" />
+                        <img src="${currencyPieChart}" alt="Currency Pie Chart" width="420" height="420" />
                       </div>
                   </div>
                 </div>

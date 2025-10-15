@@ -32,21 +32,24 @@ export async function generatePortfolioPieChart(pieChartData) {
   ];
   const total = values.reduce((sum, val) => sum + val, 0);
 
+  // Visibly distinct shades of red
+  const backgroundColor = [
+    '#8B0000', // Dark Red
+    '#B22222', // Firebrick
+    '#DC143C', // Crimson
+    '#FF6347', // Tomato
+    '#FF7F7F', // Light Red
+  ];
+
   const configuration = {
     type: 'doughnut',
     data: {
       labels,
       datasets: [{
         data: values,
-        backgroundColor: [
-          '#ff7e91ff', // light pink
-          '#FF6347', // tomato
-          '#DC143C', // crimson
-          '#B22222', // firebrick
-          '#3f0b0bff', // dark red
-        ],
-        borderColor: '#000', // Add black border
-        borderWidth: 2        // Set border width
+        backgroundColor,
+        borderColor: '#000',
+        borderWidth: 2
       }]
     },
     options: {
@@ -54,8 +57,52 @@ export async function generatePortfolioPieChart(pieChartData) {
       plugins: {
         legend: { position: 'bottom' },
         datalabels: {
-          color: '#fff',
+          color: '#fff', // White text
           font: { weight: 'bold', size: 22 },
+          formatter: (value, context) => {
+            const percent = total ? Math.round((value / total) * 100) : 0;
+            return `${percent}%`;
+          }
+        }
+      }
+    }
+  };
+
+  const image = await chartJSNodeCanvas.renderToBuffer(configuration, 'image/png');
+  return `data:image/png;base64,${image.toString('base64')}`;
+}
+
+export async function generateCurrencyPieChart(latestCurrencyRates) {
+  const labels = Object.keys(latestCurrencyRates);
+  const data = Object.values(latestCurrencyRates);
+  const total = data.reduce((sum, val) => sum + val, 0);
+
+  const backgroundColor = [
+    '#8B0000', // Dark Red
+    '#B22222', // Firebrick
+    '#DC143C', // Crimson
+    '#FF6347', // Tomato
+    '#FF7F7F', // Light Red
+  ];
+
+  const configuration = {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor,
+        borderColor: '#000',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      cutout: '35%',
+      plugins: {
+        legend: { position: "bottom" },
+        datalabels: {
+          color: '#fff',
+          font: { weight: 'bold', size: 22 }, 
           formatter: (value, context) => {
             const percent = total ? Math.round((value / total) * 100) : 0;
             return `${percent}%`;
