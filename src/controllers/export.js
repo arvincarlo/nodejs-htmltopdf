@@ -19,7 +19,7 @@ import {
   getTotalTrustPortfolioPerCurrency,
   getTotalBankPortfolioPerCurrency,
   getTotalCBSecMarketValue,
-  getLatestCurrencyRates
+  getLatestCurrencyRatesByMonth,
 } from "../services/users.js";
 import summaryTemplate from '../templates/soa/template.js';
 import { currencyConfig } from '../constants/currency.js';
@@ -107,7 +107,7 @@ router.post('/users', async (req, res) => {
     }
     
     // Fetch rates, and filter rates only for the user's currencies
-    const allLatestCurrencyRates = await getLatestCurrencyRates();
+    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
     const latestCurrencyRates = {};
     for (const code of currencyCodes) {
       if (allLatestCurrencyRates.hasOwnProperty(code)) {
@@ -270,7 +270,7 @@ router.get('/users', async (req, res) => {
     }
     
     // Fetch rates, and filter rates only for the user's currencies
-    const allLatestCurrencyRates = await getLatestCurrencyRates();
+    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
     const latestCurrencyRates = {};
     for (const code of currencyCodes) {
       if (allLatestCurrencyRates.hasOwnProperty(code)) {

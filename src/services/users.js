@@ -488,30 +488,41 @@ export async function getTotalCBSecMarketValue(cifNumber, currency) {
   }
 }
 
-export async function getLatestCurrencyRates() {
+export async function getLatestCurrencyRatesByMonth(month, year) {
   const rates = {};
   await sql.connect(config);
 
+  // Build the first day of the month for filtering
+  const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+  const yearNum = parseInt(year, 10);
+
+  // Get the first and last day of the month
+  const firstDay = `${yearNum}-${monthNum.toString().padStart(2, '0')}-01`;
+  const lastDay = new Date(yearNum, monthNum, 0); // 0th day of next month = last day of this month
+  const lastDayStr = `${yearNum}-${monthNum.toString().padStart(2, '0')}-${lastDay.getDate().toString().padStart(2, '0')}`;
+
   const query = `
     SELECT currencyCode, rate
-      FROM CurrencyExchangeRates r
-      WHERE effectiveDate = (
+    FROM CurrencyExchangeRates
+    WHERE effectiveDate >= @firstDay
+      AND effectiveDate <= @lastDay
+      AND effectiveDate = (
         SELECT MAX(effectiveDate)
         FROM CurrencyExchangeRates r2
-        WHERE r2.currencyCode = r.currencyCode
+        WHERE r2.currencyCode = CurrencyExchangeRates.currencyCode
+          AND r2.effectiveDate >= @firstDay
+          AND r2.effectiveDate <= @lastDay
       )
   `;
 
   const request = new sql.Request();
+  request.input('firstDay', sql.Date, firstDay);
+  request.input('lastDay', sql.Date, lastDayStr);
+
   const result = await request.query(query);
 
   for (const row of result.recordset) {
-    for (const [code, intCode] of Object.entries(currencyConfig)) {
-      if (row.currencyCode === code) {
-        rates[code] = row.rate;
-        break;
-      }
-    }
+    rates[row.currencyCode] = row.rate;
   }
   return rates;
 }
