@@ -16,7 +16,7 @@ export default ({
   totalMoneyMarket,
   totalFixedIncome,
   totalEquities,
-  structuredProducts,
+  totalStructuredProducts,
   totalTrustUitf
 }) => {
   const showUSD = currency.includes('USD');
@@ -174,8 +174,8 @@ export default ({
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
-                        <td class="text-center">${formatPesos(structuredProducts || 0)}</td>
-                        <td class="text-center">${getPercentage(structuredProducts || 0, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(totalStructuredProducts || 0)}</td>
+                        <td class="text-center">${getPercentage(totalStructuredProducts || 0, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Unit Trusts</td>

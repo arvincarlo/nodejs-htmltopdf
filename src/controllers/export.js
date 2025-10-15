@@ -78,8 +78,6 @@ router.post('/users', async (req, res) => {
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
     
-    // GET summary and pie chart
-    const portfolioPieChart = await generatePortfolioPieChart(data);
     
     // Getting the value per currency
     const totalTrustPortfolio = {};
@@ -125,14 +123,14 @@ router.post('/users', async (req, res) => {
         ...Object.keys(trustDeposits)
       ])
     );
-
+    
     // Product Holdings Section
     let totalMoneyMarket = 0;
     let totalFixedIncome = 0;
     let totalEquities = 0;
-    let structuredProducts = 0;
+    let totalStructuredProducts = 0;
     let totalTrustUitf = 0;
-
+    
     for (const code of allCurrencies) {
       // Deposit CASA
       const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
@@ -152,22 +150,34 @@ router.post('/users', async (req, res) => {
       totalMoneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
       totalFixedIncome += fixedIncomePHP * rate;
       totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
+      totalStructuredProducts += (0) * rate;
       totalTrustUitf += sumOfFields(trustUitf[code], 'purchaseAmount') * rate;
     }
 
+    // GET summary and pie chart
+    const pieChartData = {
+      totalMoneyMarket,
+      totalFixedIncome,
+      totalEquities,
+      totalStructuredProducts,
+      totalTrustUitf
+    }
+    const portfolioPieChart = await generatePortfolioPieChart(pieChartData);
+    
     console.log('currency codes ', currencyCodes);
     console.log('latest currency rates ', allLatestCurrencyRates);
+
     const overallTotalValue =
       (totalMoneyMarket || 0) +
       (totalFixedIncome || 0) +
       (totalEquities || 0) +
-      (structuredProducts || 0) +
+      (totalStructuredProducts || 0) +
       (totalTrustUitf || 0);
     const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, structuredProducts, totalTrustUitf } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, totalStructuredProducts, totalTrustUitf } },
       { component: page2, props: { fcbsDeposits, timeDeposits} },
       // { component: page3, props: { transactionHistory } },
       // { component: page4 },
@@ -231,8 +241,6 @@ router.get('/users', async (req, res) => {
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
     
-    // GET summary and pie chart
-    const portfolioPieChart = await generatePortfolioPieChart(data);
     
     // Getting the value per currency
     const totalTrustPortfolio = {};
@@ -278,14 +286,14 @@ router.get('/users', async (req, res) => {
         ...Object.keys(trustDeposits)
       ])
     );
-
+    
     // Product Holdings Section
     let totalMoneyMarket = 0;
     let totalFixedIncome = 0;
     let totalEquities = 0;
-    let structuredProducts = 0;
+    let totalStructuredProducts = 0;
     let totalTrustUitf = 0;
-
+    
     for (const code of allCurrencies) {
       // Deposit CASA
       const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
@@ -305,23 +313,34 @@ router.get('/users', async (req, res) => {
       totalMoneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
       totalFixedIncome += fixedIncomePHP * rate;
       totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
+      totalStructuredProducts += (0) * rate;
       totalTrustUitf += sumOfFields(trustUitf[code], 'purchaseAmount') * rate;
     }
 
+    // GET summary and pie chart
+    const pieChartData = {
+      totalMoneyMarket,
+      totalFixedIncome,
+      totalEquities,
+      totalStructuredProducts,
+      totalTrustUitf
+    }
+    const portfolioPieChart = await generatePortfolioPieChart(pieChartData);
+    
     console.log('currency codes ', currencyCodes);
     console.log('latest currency rates ', allLatestCurrencyRates);
-    
+
     const overallTotalValue =
       (totalMoneyMarket || 0) +
       (totalFixedIncome || 0) +
       (totalEquities || 0) +
-      (structuredProducts || 0) +
+      (totalStructuredProducts || 0) +
       (totalTrustUitf || 0);
     const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, structuredProducts, totalTrustUitf } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, totalStructuredProducts, totalTrustUitf } },
       { component: page2, props: { fcbsDeposits, timeDeposits} },
       // { component: page3, props: { transactionHistory } },
       // { component: page4 },

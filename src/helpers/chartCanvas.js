@@ -15,7 +15,7 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({
 //   modern: ['chartjs-plugin-datalabels']
 // }
 
-export async function generatePortfolioPieChart(data) {
+export async function generatePortfolioPieChart(pieChartData) {
   const labels = [
     'Money Market',
     'Fixed Income',
@@ -24,11 +24,11 @@ export async function generatePortfolioPieChart(data) {
     'Unit Trusts',
   ];
   const values = [
-    data.moneyMarketValue || 0,
-    data.fixedIncomeValue || 0,
-    data.equitiesValue || 0,
-    data.structuredProductsValue || 0,
-    data.unitTrustsValue || 0,
+    pieChartData.totalMoneyMarket || 0,
+    pieChartData.totalFixedIncome || 0,
+    pieChartData.totalEquities || 0,
+    pieChartData.totalStructuredProducts || 0,
+    pieChartData.totalTrustUitf || 0,
   ];
   const total = values.reduce((sum, val) => sum + val, 0);
 
@@ -39,11 +39,11 @@ export async function generatePortfolioPieChart(data) {
       datasets: [{
         data: values,
         backgroundColor: [
-          '#b71c1c', // very dark red
-          '#c62828', // dark red
-          '#e53935', // medium red
-          '#f44336', // bright red
-          '#ff8a80', // pale/light red
+          '#ff7e91ff', // light pink
+          '#FF6347', // tomato
+          '#DC143C', // crimson
+          '#B22222', // firebrick
+          '#3f0b0bff', // dark red
         ],
         borderColor: '#000', // Add black border
         borderWidth: 2        // Set border width
@@ -78,7 +78,7 @@ export async function generatePieChart(users) {
   const labels = Object.keys(roleCounts);
   const data = Object.values(roleCounts);
 
-  const total = data.reduce((sum, val) => sum + val, 0);
+  const total = pieChartData.reduce((sum, val) => sum + val, 0);
 
   const configuration = {
     type: 'pie',
