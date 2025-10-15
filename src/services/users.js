@@ -130,9 +130,9 @@ export async function getTotalCBCSecMarketValue(cifNumber) {
  *   - availableBalance
  *
  * Example usage:
- *   const deposits = await getAllDeposits('R23500000', 'Jun', 2024);
+ *   const deposits = await getFcbsDeposits('R23500000', 'Jun', 2024);
  */
-export async function getAllDeposits(cifNumber, month, year, currency) {
+export async function getFcbsDeposits(cifNumber, month, year, currency) {
   try {
     await sql.connect(config);
     const query = `
@@ -276,29 +276,6 @@ export async function getTransactionHistory(cifNumber, month, year) {
   }
 }
 
-export async function oldTrustDeposits(cifNumber) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT
-        *
-      FROM TrustDeposits
-      WHERE [cifNumber] = @cifNumber
-    `;
-
-    const request = new sql.Request();
-    request.input('cifNumber', sql.VarChar, cifNumber);
-
-    const result = await request.query(query);
-    await sql.close();
-
-    return result.recordset;
-  } catch (error) {
-    console.error('SQL error: ', error);
-    return 0;
-  }
-}
-
 export async function getAllTrustFixedIncome(cifNumber, month, year, currency) {
   try {
     await sql.connect(config);
@@ -334,7 +311,7 @@ export async function getAllTrustFixedIncome(cifNumber, month, year, currency) {
   }
 }
 
-export async function getAllTrustEquities(cifNumber) {
+export async function getAllTrustEquities(cifNumber, month, year, currency) {
   try {
     await sql.connect(config);
     const query = `
@@ -342,10 +319,22 @@ export async function getAllTrustEquities(cifNumber) {
         *
       FROM TrustEquities
       WHERE [cifNumber] = @cifNumber
+        ${currency !== undefined ? 'AND [currency] = @currency' : ''}
+      AND MONTH([valueDate]) = @monthNum
+      AND YEAR([valueDate]) = @yearNum
     `;
-
+    // Convert month shortname to month number (jun -> 6)
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
     const request = new sql.Request();
+
     request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.VarChar, monthNum);
+    request.input('yearNum', sql.VarChar, yearNum);
+
+    if (currency !== undefined) {
+      request.input('currency', sql.VarChar, currency);
+    }
 
     const result = await request.query(query);
     await sql.close();
@@ -358,7 +347,7 @@ export async function getAllTrustEquities(cifNumber) {
 }
 
 
-export async function getAllCBSecMapping(cifNumber) {
+export async function getAllCBSecMapping(cifNumber, currency) {
   try {
     await sql.connect(config);
     const query = `
@@ -368,11 +357,15 @@ export async function getAllCBSecMapping(cifNumber) {
         SELECT AccountNumber
         FROM AccountDataTables
         WHERE [Cif] = @Cif
-      );
+      )
+      ${currency !== undefined ? 'AND [accountType] = @accountType' : ''}
     `;
 
     const request = new sql.Request();
     request.input('Cif', sql.VarChar, cifNumber);
+    if (currency !== undefined) {
+      request.input('accountType', sql.VarChar, currency);
+    }
 
     const result = await request.query(query);
     await sql.close();

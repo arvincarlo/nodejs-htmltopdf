@@ -19,7 +19,8 @@ export default ({
   currency,
   latestCurrencyRates,
   totalMoneyMarket,
-  totalFixedIncome
+  totalFixedIncome,
+  totalEquities
 }) => {
   const showUSD = currency.includes('USD');
   const showEUR = currency.includes('EUR');
@@ -171,8 +172,8 @@ export default ({
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Equities</td>
-                        <td class="text-center">${formatPesos(equitiesValue)}</td>
-                        <td class="text-center">${getPercentage(equitiesValue, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(totalEquities)}</td>
+                        <td class="text-center">${getPercentage(totalEquities, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
