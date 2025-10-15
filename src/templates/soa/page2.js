@@ -1,7 +1,7 @@
 import { formatPesos, formatDateToShort } from '../../helpers/utils.js';
 import { currencyConfig } from '../../constants/currency.js';
 
-export default ({ totalDeposits = {}, totalTimeDeposits = {} }) => `
+export default ({ fcbsDeposits = {}, timeDeposits = {} }) => `
   <div class="page-header">
     <span>Bank Portfolio</span>
   </div>
@@ -22,10 +22,10 @@ export default ({ totalDeposits = {}, totalTimeDeposits = {} }) => `
         </thead>
         <tbody style="font-size:14px;">
           ${
-            Object.keys(totalDeposits)
+            Object.keys(fcbsDeposits)
               .sort((a, b) => Number(a) - Number(b))
               .map(currencyCode => {
-                const items = totalDeposits[currencyCode];
+                const items = fcbsDeposits[currencyCode];
                 if (!items || !items.length) return '';
                 const currencyLabel = currencyConfig[currencyCode] || currencyCode;
                 return `
@@ -76,10 +76,10 @@ export default ({ totalDeposits = {}, totalTimeDeposits = {} }) => `
         </thead>
         <tbody style="font-size:14px;">
           ${
-            Object.keys(totalTimeDeposits)
+            Object.keys(timeDeposits)
               .sort((a, b) => Number(a) - Number(b))
               .map(currencyCode => {
-                const items = totalTimeDeposits[currencyCode];
+                const items = timeDeposits[currencyCode];
                 if (!items || !items.length) return '';
                 const currencyLabel = currencyConfig[currencyCode] || currencyCode;
                 return `

@@ -9,18 +9,15 @@ export default ({
   totalBankPortfolio,
   totalTrustPortfolio,
   totalCBSecMarketValue,
-  totalMoneyMarketValue,
-  fixedIncomeValue,
-  equitiesValue,
-  structuredProductsValue,
-  unitTrustsValue,
   portfolioPieChart,
   prevMonthAUM,
   currency,
   latestCurrencyRates,
   totalMoneyMarket,
   totalFixedIncome,
-  totalEquities
+  totalEquities,
+  structuredProducts,
+  totalTrustUitf
 }) => {
   const showUSD = currency.includes('USD');
   const showEUR = currency.includes('EUR');
@@ -177,13 +174,13 @@ export default ({
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Structured Products<br />& Other Investments</td>
-                        <td class="text-center">${formatPesos(structuredProductsValue)}</td>
-                        <td class="text-center">${getPercentage(structuredProductsValue, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(structuredProducts || 0)}</td>
+                        <td class="text-center">${getPercentage(structuredProducts || 0, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Unit Trusts</td>
-                        <td class="text-center">${formatPesos(unitTrustsValue)}</td>
-                        <td class="text-center">${getPercentage(unitTrustsValue, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(totalTrustUitf)}</td>
+                        <td class="text-center">${getPercentage(totalTrustUitf, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px uppercase text-primary font-weight-600">Total</td>

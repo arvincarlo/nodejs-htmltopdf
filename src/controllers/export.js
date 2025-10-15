@@ -10,13 +10,12 @@ import {
   getFcbsDeposits, 
   getAllTimeDeposits, 
   getFcbsDepositsByCifNumber, 
-  getTotalTrustPortfolio, 
   getTransactionHistory, 
   getAllTrustDeposits, 
   getAllTrustFixedIncome,
   getAllTrustEquities,
   getAllCBSecMapping,
-  oldTrustDeposits,
+  getAllTrustUitf,
   getPrevMonthAUM,
   getTotalTrustPortfolioPerCurrency,
   getTotalBankPortfolioPerCurrency,
@@ -85,19 +84,19 @@ router.post('/users', async (req, res) => {
     const totalTrustPortfolio = {};
     const totalBankPortfolio = {};
     const totalCBSecMarketValue = {};
-    const totalTrustDeposits = {};
+    const trustDeposits = {};
 
     for (const currencyInt of currencyCodes) {
       totalDeposits[currencyInt] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyInt);
       totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTrustDeposits[currencyInt] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyInt);
+      trustDeposits[currencyInt] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyInt);
       totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
       totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
       totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
     }
 
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
-    const oTrustDeposits = await oldTrustDeposits(data.cifNumber);
+    const oTrustDeposits = await getAllTrustDeposits(data.cifNumber);
     const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
     const trustEquities = await getAllTrustEquities(data.cifNumber);
     const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
@@ -119,7 +118,7 @@ router.post('/users', async (req, res) => {
       new Set([
         ...Object.keys(totalDeposits),
         ...Object.keys(totalTimeDeposits),
-        ...Object.keys(totalTrustDeposits)
+        ...Object.keys(trustDeposits)
       ].map(Number))
     );
 
@@ -130,7 +129,7 @@ router.post('/users', async (req, res) => {
       // Time Deposit
       const timeDepPHP = sumOfFields(totalTimeDeposits[code], 'principalAmount');
       // Trust TD
-      const trustDepPHP = sumOfFields(totalTrustDeposits[code], 'principalAmount');
+      const trustDepPHP = sumOfFields(trustDeposits[code], 'principalAmount');
 
       // Convert to PHP if not PHP (code 0)
       const rate = code === 0 ? 1 : (latestCurrencyRates[code] || 1);
@@ -148,7 +147,7 @@ router.post('/users', async (req, res) => {
     // ... Pages definition
     const pages = [
       { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, moneyMarket } },
-      { component: page2, props: { totalDeposits, totalTimeDeposits, totalTrustDeposits } },
+      { component: page2, props: { totalDeposits, totalTimeDeposits, trustDeposits } },
       { component: page3, props: { transactionHistory } },
       // { component: page4 },
       // { component: page5 },
@@ -211,7 +210,6 @@ router.get('/users', async (req, res) => {
     // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
-    console.log('currency codes: ', currencyCodes);
     
     // GET deposits
     const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
@@ -224,22 +222,24 @@ router.get('/users', async (req, res) => {
     const totalBankPortfolio = {};
     const totalCBSecMarketValue = {};
     const fcbsDeposits = {};
-    const totalTimeDeposits = {};
-    const totalTrustDeposits = {};
+    const timeDeposits = {};
+    const trustDeposits = {};
     const trustFixedIncome = {};
     const trustEquities = {};
-    const CBSecMapping = {};
+    const cbsecMapping = {};
+    const trustUitf = {};
 
     for (const currencyCode of currencyCodes) {
-      fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
-      totalTimeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
-      totalTrustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
-      totalTrustPortfolio[currencyCode] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyCode);
       totalBankPortfolio[currencyCode] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyCode);
+      totalTrustPortfolio[currencyCode] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyCode);
       totalCBSecMarketValue[currencyCode] = await getTotalCBSecMarketValue(data.cifNumber, currencyCode);
+      fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      timeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      trustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
       trustFixedIncome[currencyCode] = await getAllTrustFixedIncome(data.cifNumber, data.month, data.year, currencyCode);
       trustEquities[currencyCode] = await getAllTrustEquities(data.cifNumber, data.month, data.year, currencyCode);
-      CBSecMapping[currencyCode] = await getAllCBSecMapping(data.cifNumber, currencyCode);
+      cbsecMapping[currencyCode] = await getAllCBSecMapping(data.cifNumber, currencyCode);
+      trustUitf[currencyCode] = await getAllTrustUitf(data.cifNumber, data.month, data.year, currencyCode);
     }
     
     // Fetch rates, and filter rates only for the user's currencies
@@ -255,8 +255,8 @@ router.get('/users', async (req, res) => {
     const allCurrencies = Array.from(
       new Set([
         ...Object.keys(fcbsDeposits),
-        ...Object.keys(totalTimeDeposits),
-        ...Object.keys(totalTrustDeposits)
+        ...Object.keys(timeDeposits),
+        ...Object.keys(trustDeposits)
       ])
     );
 
@@ -264,42 +264,46 @@ router.get('/users', async (req, res) => {
     let totalMoneyMarket = 0;
     let totalFixedIncome = 0;
     let totalEquities = 0;
+    let structuredProducts = 0;
+    let totalTrustUitf = 0;
+
     for (const code of allCurrencies) {
       // Deposit CASA
       const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
       // Time Deposit
-      const timeDepPHP = sumOfFields(totalTimeDeposits[code], 'principalAmount');
+      const timeDepPHP = sumOfFields(timeDeposits[code], 'principalAmount');
       // Trust TD
-      const trustDepPHP = sumOfFields(totalTrustDeposits[code], 'principalAmount');
+      const trustDepPHP = sumOfFields(trustDeposits[code], 'principalAmount');
       // Trust Fixed Income
       const fixedIncomePHP = sumOfFields(trustFixedIncome[code], 'faceAmount');
 
       // Equities (Trust Equities + CB Securities Mapping)
       const trustEquitiesPHP = sumOfFields(trustEquities[code], 'purchaseAmount');
-      const CBSecMappingPHP = sumOfFields(CBSecMapping[code], 'netPurchaseAmount');
+      const cbsecMappingPHP = sumOfFields(cbsecMapping[code], 'netPurchaseAmount');
 
       // Convert to PHP if not PHP (code 0)
       const rate = code === 'PHP' ? 1 : (latestCurrencyRates[code] || 1);
       totalMoneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
       totalFixedIncome += fixedIncomePHP * rate;
-      totalEquities += (trustEquitiesPHP + CBSecMappingPHP) * rate;
+      totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
+      totalTrustUitf += sumOfFields(trustUitf[code], 'purchaseAmount') * rate;
     }
 
     console.log('currency codes ', currencyCodes);
     console.log('latest currency rates ', allLatestCurrencyRates);
-    console.log('totalEquities ', totalEquities);
+    console.log('totalTrustUitf ', totalTrustUitf);
     const overallTotalValue =
       (totalMoneyMarket || 0) +
       (totalFixedIncome || 0) +
-      (data.equitiesValue || 0) +
-      (data.structuredProductsValue || 0) +
-      (data.unitTrustsValue || 0);
+      (totalEquities || 0) +
+      (structuredProducts || 0) +
+      (totalTrustUitf || 0);
     const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities } },
-      { component: page2, props: { fcbsDeposits, totalTimeDeposits} },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, structuredProducts, totalTrustUitf } },
+      { component: page2, props: { fcbsDeposits, timeDeposits} },
       // { component: page3, props: { transactionHistory } },
       // { component: page4 },
       // { component: page5 },

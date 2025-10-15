@@ -55,40 +55,6 @@ export async function getFcbsDepositsByCifNumber(cifNumber, month, year) {
   }
 }
 
-/**
- * Get the sum of TrustFixedIncome.faceAmount, TrustEquities.purchaseAmount, and TrustUitf.purchaseAmount for a given cifNumber.
- * @param {string} cifNumber
- * @returns {Promise<number>} The total sum
- */
-export async function getTotalTrustPortfolio(cifNumber) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT
-        ISNULL((SELECT SUM(faceAmount) FROM TrustFixedIncome WHERE cifNumber = @cifNumber), 0) AS totalFixedIncome,
-        ISNULL((SELECT SUM(purchaseAmount) FROM TrustEquities WHERE cifNumber = @cifNumber), 0) AS totalEquities,
-        ISNULL((SELECT SUM(purchaseAmount) FROM TrustUitf WHERE cifNumber = @cifNumber), 0) AS totalUitf,
-        ISNULL((SELECT SUM(principalAmount) FROM TrustDeposits WHERE cifNumber = @cifNumber), 0) AS totalDeposits
-    `;
-    const request = new sql.Request();
-    request.input('cifNumber', sql.VarChar, cifNumber);
-    const result = await request.query(query);
-    await sql.close();
-
-    const row = result.recordset[0] || {};
-
-    // Sum all fields for the total
-    return (
-      (row.totalDeposits || 0) +
-      (row.totalFixedIncome || 0) +
-      (row.totalEquities || 0) +
-      (row.totalUitf || 0)
-    );
-  } catch (error) {
-    console.error('SQL error:', error);
-    return 0;
-  }
-}
 
 /**
  * Get the sum of CBSecMapping.marketValue for a given cifNumber.
@@ -346,6 +312,40 @@ export async function getAllTrustEquities(cifNumber, month, year, currency) {
   }
 }
 
+export async function getAllTrustUitf(cifNumber, month, year, currency) {
+  try {
+    await sql.connect(config);
+    const query = `
+      SELECT
+        *
+      FROM TrustUitf
+      WHERE [cifNumber] = @cifNumber
+        ${currency !== undefined ? 'AND [currency] = @currency' : ''}
+      AND MONTH([valueDate]) = @monthNum
+      AND YEAR([valueDate]) = @yearNum
+    `;
+    // Convert month shortname to month number (jun -> 6)
+    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
+    const yearNum = parseInt(year, 10);
+    const request = new sql.Request();
+
+    request.input('cifNumber', sql.VarChar, cifNumber);
+    request.input('monthNum', sql.VarChar, monthNum);
+    request.input('yearNum', sql.VarChar, yearNum);
+
+    if (currency !== undefined) {
+      request.input('currency', sql.VarChar, currency);
+    }
+
+    const result = await request.query(query);
+    await sql.close();
+
+    return result.recordset;
+  } catch (error) {
+    console.error('SQL error: ', error);
+    return 0;
+  }
+}
 
 export async function getAllCBSecMapping(cifNumber, currency) {
   try {
