@@ -27,7 +27,7 @@ export default ({ fcbsDeposits = {}, timeDeposits = {} }) => `
               .map(currencyCode => {
                 const items = fcbsDeposits[currencyCode];
                 if (!items || !items.length) return '';
-                const currencyLabel = currencyConfig[currencyCode] || currencyCode;
+                const currencyLabel = currencyCode;
                 return `
                   <tr>
                     <td colspan="6" style="padding:4px; font-weight:bold; text-align:left;">${currencyLabel}</td>
@@ -81,7 +81,7 @@ export default ({ fcbsDeposits = {}, timeDeposits = {} }) => `
               .map(currencyCode => {
                 const items = timeDeposits[currencyCode];
                 if (!items || !items.length) return '';
-                const currencyLabel = currencyConfig[currencyCode] || currencyCode;
+                const currencyLabel = currencyCode;
                 return `
                   <tr>
                     <td colspan="10" style="text-align:left; font-weight:bold;">${currencyLabel}</td>

@@ -203,3 +203,17 @@ const query = `
           AND MONTH([valueDate]) = @monthNum
           AND YEAR([valueDate]) = @yearNum
     `;
+
+
+  Notes: 10/15/25
+
+  prepare the deployment kung paano i de deploy , uat & sit server
+list of servers
+
+i consolidate ko yan, 
+
+yung table na nagpapagana sakin ngayon, eto din yung gagamitin dun sa uat
+
+comes uat-handoff 2, dun na manggagaling yung data nya ngayon
+
+pa-help ako kay king

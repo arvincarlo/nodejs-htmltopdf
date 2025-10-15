@@ -163,6 +163,8 @@ router.post('/users', async (req, res) => {
       totalTrustUitf
     }
     const portfolioPieChart = await generatePortfolioPieChart(pieChartData);
+
+    const currencyPieChart = await generateCurrencyPieChart(latestCurrencyRates);
     
     console.log('currency codes ', currencyCodes);
     console.log('latest currency rates ', allLatestCurrencyRates);
@@ -177,7 +179,7 @@ router.post('/users', async (req, res) => {
 
     // ... Pages definition
     const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, totalStructuredProducts, totalTrustUitf } },
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, totalStructuredProducts, totalTrustUitf, currencyPieChart } },
       { component: page2, props: { fcbsDeposits, timeDeposits} },
       // { component: page3, props: { transactionHistory } },
       // { component: page4 },
@@ -205,7 +207,7 @@ router.post('/users', async (req, res) => {
 
     res.contentType('application/pdf');
     res.send(pdf);
-  } catch (error) {
+  }catch (error) {
     console.error('Error fetching the users: ', error);
     res.status(500).send('No users found.');
   }
