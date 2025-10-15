@@ -31,9 +31,6 @@ export function getLastDayOfMonth(month, year) {
   return `${month} ${lastDay.getDate()}, ${year}`;
 }
 
-export function sumAvailableBalance(deposits) {
-  return (deposits || []).reduce((sum, d) => sum + (d.availableBalance || 0), 0);
-}
-export function sumPrincipalAmount(deposits) {
-  return (deposits || []).reduce((sum, d) => sum + (d.principalAmount || 0), 0);
+export function sumOfFields(items, field) {
+  return (items || []).reduce((sum, item) => sum + (item[field] || 0), 0);
 }

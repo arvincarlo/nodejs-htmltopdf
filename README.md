@@ -184,3 +184,22 @@ for (const code of allCurrencies) {
 }
 
 console.log('Money Market (PHP):', moneyMarket.toFixed(2));
+
+
+
+const query = `
+      SELECT DISTINCT [currency] FROM FcbsDeposits
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([dateCovered]) = @monthNum
+          AND YEAR([dateCovered]) = @yearNum
+      UNION
+      SELECT DISTINCT [currency] FROM FcbsTimeDeposits
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNumget
+      UNION
+      SELECT DISTINCT [currency] FROM TrustDeposits
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNum
+    `;

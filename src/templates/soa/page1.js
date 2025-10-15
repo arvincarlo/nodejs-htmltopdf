@@ -9,7 +9,7 @@ export default ({
   totalBankPortfolio,
   totalTrustPortfolio,
   totalCBSecMarketValue,
-  moneyMarketValue,
+  totalMoneyMarketValue,
   fixedIncomeValue,
   equitiesValue,
   structuredProductsValue,
@@ -18,7 +18,8 @@ export default ({
   prevMonthAUM,
   currency,
   latestCurrencyRates,
-  moneyMarket
+  totalMoneyMarket,
+  totalFixedIncome
 }) => {
   const showUSD = currency.includes('USD');
   const showEUR = currency.includes('EUR');
@@ -160,13 +161,13 @@ export default ({
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Money Market</td>
-                        <td class="text-center">${formatPesos(moneyMarket)}</td>
-                        <td class="text-center">${getPercentage(moneyMarket, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(totalMoneyMarket)}</td>
+                        <td class="text-center">${getPercentage(totalMoneyMarket, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Fixed Income</td>
-                        <td class="text-center">${formatPesos(fixedIncomeValue)}</td>
-                        <td class="text-center">${getPercentage(fixedIncomeValue, overallTotalValue)}%</td>
+                        <td class="text-center">${formatPesos(totalFixedIncome)}</td>
+                        <td class="text-center">${getPercentage(totalFixedIncome, overallTotalValue)}%</td>
                       </tr>
                       <tr>
                         <td class="chart-breakdown-label padding-10px text-primary font-weight-600">Equities</td>
