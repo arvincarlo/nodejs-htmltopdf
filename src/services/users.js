@@ -3,83 +3,6 @@ import sql from 'mssql/msnodesqlv8.js';
 import { currencyConfig } from '../constants/currency.js';
 import config from '../config/db.js';
 
-/**
- * Retrieves the total available balance from FcbsDeposits for a given cifNumber, month, and year,
- * and adds the total principal amount from FcbsTimeDeposits for the same cifNumber.
- *
- * @param {string} cifNumber - The CIF number to filter records.
- * @param {string} month - The short month name (e.g., 'Jan', 'Feb', 'Mar').
- * @param {string|number} year - The year (e.g., '2024' or 2024).
- * @returns {Promise<number>} The sum of availableBalance (for the given month/year) and principalAmount (all time) for the cifNumber.
- *
- * Example usage:
- *   const total = await getFcbsDepositsByCifNumber('R23500000', 'Nov', 2024);
- */
-export async function getFcbsDepositsByCifNumber(cifNumber, month, year) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT
-        ISNULL(SUM(fd.[availableBalance]), 0) AS totalAvailableBalance,
-        (
-          SELECT ISNULL(SUM([principalAmount]), 0)
-          FROM FcbsTimeDeposits
-          WHERE [cifNumber] = @cifNumber
-        ) AS totalPrincipalAmount
-      FROM FcbsDeposits fd
-      WHERE fd.[cifNumber] = @cifNumber
-        AND MONTH(fd.[dateCovered]) = @monthNum
-        AND YEAR(fd.[dateCovered]) = @yearNum
-    `;
-
-    // Convert month shortname to month number (jun -> 6)
-    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
-    const yearNum = parseInt(year, 10);
-
-
-    const request = new sql.Request();
-    request.input('cifNumber', sql.VarChar, cifNumber);
-    request.input('monthNum', sql.VarChar, monthNum);
-    request.input('yearNum', sql.VarChar, yearNum);
-
-
-    const result = await request.query(query);
-    await sql.close();
-
-    const row = result.recordset[0] || {};
-    // Return the sum of availableBalance and principalAmount
-    return (row.totalAvailableBalance || 0) + (row.totalPrincipalAmount || 0);
-  } catch (error) {
-    console.error('SQL error:', error);
-    return 0;
-  }
-}
-
-
-/**
- * Get the sum of CBSecMapping.marketValue for a given cifNumber.
- * @param {string} cifNumber
- * @returns {Promise<number>} The total market value
- */
-export async function getTotalCBCSecMarketValue(cifNumber) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT ISNULL(SUM([marketValue]), 0) AS totalMarketValue
-      FROM CBSecMapping
-      WHERE [cifNumber] = @cifNumber
-    `;
-    const request = new sql.Request();
-    request.input('cifNumber', sql.VarChar, cifNumber);
-    const result = await request.query(query);
-    await sql.close();
-
-    return result.recordset[0]?.totalMarketValue || 0;
-  } catch (error) {
-    console.error('SQL error:', error);
-    return 0;
-  }
-}
 
 /**
  * Retrieves all deposit records for a given CIF number, month, and year from the FcbsDeposits table.
@@ -210,7 +133,7 @@ export async function getAllTrustDeposits(cifNumber, month, year, currency) {
 }
 
 
-export async function getTransactionHistory(cifNumber, month, year) {
+export async function getTransactionHistory(cifNumber, month, year, currency) {
   try {
     await sql.connect(config);
     const query = `
@@ -221,6 +144,7 @@ export async function getTransactionHistory(cifNumber, month, year) {
         FROM AccountDataTables
         WHERE [cif] = @cifNumber
       )
+      ${currency !== undefined ? 'AND [ccy] = @currency' : ''}
       AND MONTH([transDateValueDate]) = @monthNum
       AND YEAR([transDateValueDate]) = @yearNum;
     `;
@@ -231,6 +155,10 @@ export async function getTransactionHistory(cifNumber, month, year) {
     request.input('cifNumber', sql.VarChar, cifNumber);
     request.input('monthNum', sql.Int, monthNum);
     request.input('yearNum', sql.Int, yearNum);
+
+    if (currency !== undefined) {
+      request.input('currency', sql.VarChar, currency);
+    }
 
     const result = await request.query(query);
     await sql.close();

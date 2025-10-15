@@ -9,7 +9,6 @@ import {
   getAllUserCurrency,
   getFcbsDeposits, 
   getAllTimeDeposits, 
-  getFcbsDepositsByCifNumber, 
   getTransactionHistory, 
   getAllTrustDeposits, 
   getAllTrustFixedIncome,
@@ -76,143 +75,8 @@ router.post('/users', async (req, res) => {
     );
 
     // GET All the currency of the user
-    const currencyCodes = await getAllUserCurrency(data.cifNumber, data.month, data.year);
-
-    // Prepare per-currency objects
-    const totalDeposits = {};
-    const totalTimeDeposits = {};
-    const totalTrustPortfolio = {};
-    const totalBankPortfolio = {};
-    const totalCBSecMarketValue = {};
-    const trustDeposits = {};
-
-    for (const currencyInt of currencyCodes) {
-      totalDeposits[currencyInt] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTimeDeposits[currencyInt] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      trustDeposits[currencyInt] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyInt);
-      totalTrustPortfolio[currencyInt] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyInt);
-      totalBankPortfolio[currencyInt] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyInt);
-      totalCBSecMarketValue[currencyInt] = await getTotalCBSecMarketValue(data.cifNumber, currencyInt);
-    }
-
-    const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
-    const oTrustDeposits = await getAllTrustDeposits(data.cifNumber);
-    const trustFixedIncome = await getAllTrustFixedIncome(data.cifNumber);
-    const trustEquities = await getAllTrustEquities(data.cifNumber);
-    const CBSecMapping = await getAllCBSecMapping(data.cifNumber);
-
-    // GET summary and pie chart
-    const portfolioPieChart = await generatePortfolioPieChart(data);
-
-    // Fetch rates, and filter rates only for the user's currencies
-    const allLatestCurrencyRates = await getLatestCurrencyRates();
-    const latestCurrencyRates = {};
-    for (const code of currencyCodes) {
-      if (allLatestCurrencyRates.hasOwnProperty(code)) {
-        latestCurrencyRates[code] = allLatestCurrencyRates[code];
-      }
-    }
-
-    // Get all currency codes present in any of the objects
-    const allCurrencies = Array.from(
-      new Set([
-        ...Object.keys(totalDeposits),
-        ...Object.keys(totalTimeDeposits),
-        ...Object.keys(trustDeposits)
-      ].map(Number))
-    );
-
-    let moneyMarket = 0;
-    for (const code of allCurrencies) {
-      // Deposit CASA
-      const depositPHP = sumOfFields(totalDeposits[code], 'availableBalance');
-      // Time Deposit
-      const timeDepPHP = sumOfFields(totalTimeDeposits[code], 'principalAmount');
-      // Trust TD
-      const trustDepPHP = sumOfFields(trustDeposits[code], 'principalAmount');
-
-      // Convert to PHP if not PHP (code 0)
-      const rate = code === 0 ? 1 : (latestCurrencyRates[code] || 1);
-      moneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
-    }
-
-    const overallTotalValue =
-      (data.unitTrustsValue || 0) +
-      (data.structuredProductsValue || 0) +
-      (data.equitiesValue || 0) +
-      (data.fixedIncomeValue || 0) +
-      (data.moneyMarketValue || 0);
-    const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
-
-    // ... Pages definition
-    const pages = [
-      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, moneyMarket } },
-      { component: page2, props: { totalDeposits, totalTimeDeposits, trustDeposits } },
-      { component: page3, props: { transactionHistory } },
-      // { component: page4 },
-      // { component: page5 },
-      // { component: page6 },
-      // { component: page7 },
-      { component: page8, props: { trustDeposits: oTrustDeposits } },
-      { component: page9, props: { trustFixedIncome } },
-      { component: page10, props: { trustEquities } },
-      // { component: page11 },
-      { component: page12, props: { trustEquities } },
-      // { component: page13 },
-      { component: page14, props: { CBSecMapping } },
-    ];
-
-    const html = summaryTemplate({
-      summaryTitle: "WMG SOA Report",
-      headerLogoBase64,
-      headerBgBase64,
-      footerLogoBase64,
-      pages,
-      preview: false,
-    });
-
-    const pdf = await htmlToPDF(html);
-
-    res.contentType('application/pdf');
-    res.send(pdf);
-  } catch (error) {
-    console.error('Error fetching the users: ', error);
-    res.status(500).send('No users found.');
-  }
-});
-
-router.get('/users', async (req, res) => {
-  const data = {
-    month: 'Nov',
-    year: '2024',
-    accountName: 'Jane Peterson',
-    unitTrustsValue: 2000000,
-    structuredProductsValue: 100000,
-    equitiesValue: 800000,
-    fixedIncomeValue: 1500000,
-    moneyMarketValue: 1000000,
-    cifNumber: 'R23500000',
-  }
-
-  console.log("data in export: ", data);
-
-  try {
-    const headerLogoBase64 = getBase64Image(
-      path.join(process.cwd(), 'public', 'images', 'header-logo.png')
-    );
-    const headerBgBase64 = getBase64Image(
-      path.join(process.cwd(), 'public', 'images', 'header-bg.png')
-    );
-    const footerLogoBase64 = getBase64Image(
-      path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
-    );
-
-    // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
-    
-    // GET deposits
-    const transactionHistory = await getTransactionHistory(data.cifNumber, data.month, data.year);
     
     // GET summary and pie chart
     const portfolioPieChart = await generatePortfolioPieChart(data);
@@ -228,7 +92,8 @@ router.get('/users', async (req, res) => {
     const trustEquities = {};
     const cbsecMapping = {};
     const trustUitf = {};
-
+    const transactionHistory = {};
+    
     for (const currencyCode of currencyCodes) {
       totalBankPortfolio[currencyCode] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyCode);
       totalTrustPortfolio[currencyCode] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyCode);
@@ -240,6 +105,7 @@ router.get('/users', async (req, res) => {
       trustEquities[currencyCode] = await getAllTrustEquities(data.cifNumber, data.month, data.year, currencyCode);
       cbsecMapping[currencyCode] = await getAllCBSecMapping(data.cifNumber, currencyCode);
       trustUitf[currencyCode] = await getAllTrustUitf(data.cifNumber, data.month, data.year, currencyCode);
+      transactionHistory[currencyCode] = await getTransactionHistory(data.cifNumber, data.month, data.year, currencyCode);
     }
     
     // Fetch rates, and filter rates only for the user's currencies
@@ -291,7 +157,160 @@ router.get('/users', async (req, res) => {
 
     console.log('currency codes ', currencyCodes);
     console.log('latest currency rates ', allLatestCurrencyRates);
-    console.log('totalTrustUitf ', totalTrustUitf);
+    const overallTotalValue =
+      (totalMoneyMarket || 0) +
+      (totalFixedIncome || 0) +
+      (totalEquities || 0) +
+      (structuredProducts || 0) +
+      (totalTrustUitf || 0);
+    const prevMonthAUM = await getPrevMonthAUM(data.cifNumber, data.month, data.year);
+
+    // ... Pages definition
+    const pages = [
+      { component: page1, props: { ...data, portfolioPieChart, overallTotalValue, totalBankPortfolio, totalTrustPortfolio, totalCBSecMarketValue, prevMonthAUM, currency: currencyCodes, latestCurrencyRates, totalMoneyMarket, totalFixedIncome, totalEquities, structuredProducts, totalTrustUitf } },
+      { component: page2, props: { fcbsDeposits, timeDeposits} },
+      // { component: page3, props: { transactionHistory } },
+      // { component: page4 },
+      // { component: page5 },
+      // { component: page6 },
+      // { component: page7 },
+      // { component: page8, props: { trustDeposits } },
+      // { component: page9, props: { trustFixedIncome } },
+      // { component: page10, props: { trustEquities } },
+      // { component: page11 },
+      // { component: page12, props: { trustEquities } },
+      // { component: page13 },
+      // { component: page14, props: { CBSecMapping } },
+    ];
+
+    const html = summaryTemplate({
+      summaryTitle: "WMG SOA Report",
+      headerLogoBase64,
+      headerBgBase64,
+      footerLogoBase64,
+      pages,
+      preview: false,
+    });
+    const pdf = await htmlToPDF(html);
+
+    res.contentType('application/pdf');
+    res.send(pdf);
+  } catch (error) {
+    console.error('Error fetching the users: ', error);
+    res.status(500).send('No users found.');
+  }
+});
+
+router.get('/users', async (req, res) => {
+  const data = {
+    month: 'Nov',
+    year: '2024',
+    accountName: 'Jane Peterson',
+    unitTrustsValue: 2000000,
+    structuredProductsValue: 100000,
+    equitiesValue: 800000,
+    fixedIncomeValue: 1500000,
+    moneyMarketValue: 1000000,
+    cifNumber: 'R23500000',
+  }
+
+  console.log("data in export: ", data);
+
+  try {
+    const headerLogoBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'header-logo.png')
+    );
+    const headerBgBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'header-bg.png')
+    );
+    const footerLogoBase64 = getBase64Image(
+      path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
+    );
+
+    // GET All the currency of the user
+    const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
+    const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
+    
+    // GET summary and pie chart
+    const portfolioPieChart = await generatePortfolioPieChart(data);
+    
+    // Getting the value per currency
+    const totalTrustPortfolio = {};
+    const totalBankPortfolio = {};
+    const totalCBSecMarketValue = {};
+    const fcbsDeposits = {};
+    const timeDeposits = {};
+    const trustDeposits = {};
+    const trustFixedIncome = {};
+    const trustEquities = {};
+    const cbsecMapping = {};
+    const trustUitf = {};
+    const transactionHistory = {};
+    
+    for (const currencyCode of currencyCodes) {
+      totalBankPortfolio[currencyCode] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyCode);
+      totalTrustPortfolio[currencyCode] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyCode);
+      totalCBSecMarketValue[currencyCode] = await getTotalCBSecMarketValue(data.cifNumber, currencyCode);
+      fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      timeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      trustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      trustFixedIncome[currencyCode] = await getAllTrustFixedIncome(data.cifNumber, data.month, data.year, currencyCode);
+      trustEquities[currencyCode] = await getAllTrustEquities(data.cifNumber, data.month, data.year, currencyCode);
+      cbsecMapping[currencyCode] = await getAllCBSecMapping(data.cifNumber, currencyCode);
+      trustUitf[currencyCode] = await getAllTrustUitf(data.cifNumber, data.month, data.year, currencyCode);
+      transactionHistory[currencyCode] = await getTransactionHistory(data.cifNumber, data.month, data.year, currencyCode);
+    }
+    
+    // Fetch rates, and filter rates only for the user's currencies
+    const allLatestCurrencyRates = await getLatestCurrencyRates();
+    const latestCurrencyRates = {};
+    for (const code of currencyCodes) {
+      if (allLatestCurrencyRates.hasOwnProperty(code)) {
+        latestCurrencyRates[code] = allLatestCurrencyRates[code];
+      }
+    }
+
+    // Get all currency codes present in any of the objects
+    const allCurrencies = Array.from(
+      new Set([
+        ...Object.keys(fcbsDeposits),
+        ...Object.keys(timeDeposits),
+        ...Object.keys(trustDeposits)
+      ])
+    );
+
+    // Product Holdings Section
+    let totalMoneyMarket = 0;
+    let totalFixedIncome = 0;
+    let totalEquities = 0;
+    let structuredProducts = 0;
+    let totalTrustUitf = 0;
+
+    for (const code of allCurrencies) {
+      // Deposit CASA
+      const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
+      // Time Deposit
+      const timeDepPHP = sumOfFields(timeDeposits[code], 'principalAmount');
+      // Trust TD
+      const trustDepPHP = sumOfFields(trustDeposits[code], 'principalAmount');
+      // Trust Fixed Income
+      const fixedIncomePHP = sumOfFields(trustFixedIncome[code], 'faceAmount');
+
+      // Equities (Trust Equities + CB Securities Mapping)
+      const trustEquitiesPHP = sumOfFields(trustEquities[code], 'purchaseAmount');
+      const cbsecMappingPHP = sumOfFields(cbsecMapping[code], 'netPurchaseAmount');
+
+      // Convert to PHP if not PHP (code 0)
+      const rate = code === 'PHP' ? 1 : (latestCurrencyRates[code] || 1);
+      totalMoneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
+      totalFixedIncome += fixedIncomePHP * rate;
+      totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
+      totalTrustUitf += sumOfFields(trustUitf[code], 'purchaseAmount') * rate;
+    }
+
+    console.log('currency codes ', currencyCodes);
+    console.log('latest currency rates ', allLatestCurrencyRates);
+    
     const overallTotalValue =
       (totalMoneyMarket || 0) +
       (totalFixedIncome || 0) +
