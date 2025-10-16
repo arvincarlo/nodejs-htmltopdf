@@ -191,7 +191,7 @@ export default ({
                       <tr>
                         <td class="chart-breakdown-label padding-10px uppercase text-primary font-weight-600">Total</td>
                         <td class="text-center">${formatPesos(overallTotalValue)}</td>
-                        <td class="text-center">100%</td>
+                        <td class="text-center">${getPercentage(overallTotalValue, overallTotalValue) || '100'}%</td>
                       </tr>
                     </tbody>
                   </table>

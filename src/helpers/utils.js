@@ -20,10 +20,10 @@ export function getPercentage(value, total) {
   return Math.round((Number(value) / Number(total)) * 100);
 }
 
-export function getPercentageChange(total, previous) {
-  const value = (total - previous) / previous;
-  const percent = (value * 100).toFixed(2);
-  return percent;
+export function getPercentageChange(current, previous) {
+  if (!previous || isNaN(previous) || previous === 0) return 0;
+  if (!current || isNaN(current)) return 0;
+  return (((current - previous) / previous) * 100).toFixed(2);
 }
 
 // Format a JS Date object to 'DD-MMM-YY' (e.g., 11-Mar-23)
