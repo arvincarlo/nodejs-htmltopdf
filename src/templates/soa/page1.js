@@ -20,10 +20,35 @@ export default ({
   totalTrustUitf,
   currencyPieChart
 }) => {
-  const showUSD = currency.includes('USD');
-  const showEUR = currency.includes('EUR');
-  const showCNY = currency.includes('CNY');
-  const showJPY = currency.includes('JPY');
+  const currencyHeaders = currency.map(code => {
+    let superscript = '';
+    if (currencyConfig[code] && currencyConfig[code] !== '0') {
+      superscript = '<sup>' + currencyConfig[code] + '</sup>';
+    }
+    return `<td class="text-primary text-center fw-bold">${code}${superscript}</td>`;
+  }).join('');
+
+  const bankPortfolioRow = currency.map(code =>
+    `<td class="text-center">${formatPesos(totalBankPortfolio[code] || 0)}</td>`
+  ).join('');
+
+  const trustPortfolioRow = currency.map(code =>
+    `<td class="text-center">${formatPesos(totalTrustPortfolio[code] || 0)}</td>`
+  ).join('');
+
+  const cbsecMarketValueRow = currency.map(code =>
+    `<td class="text-center">${formatPesos(totalCBSecMarketValue[code] || 0)}</td>`
+  ).join('');
+
+  const grandTotalRow = currency.map(code =>
+    `<td class="fw-bold text-center">${
+      formatPesos(
+        (totalBankPortfolio[code] || 0) +
+        (totalTrustPortfolio[code] || 0) +
+        (totalCBSecMarketValue[code] || 0)
+      )
+    }</td>`
+  ).join('');
 
   return `
     <div style="padding: 32px;">
@@ -85,49 +110,29 @@ export default ({
             <tbody class="font-weight-600">
               <tr class="summary-table-header bg-primary text-white">
                 <td class="summary-table-heading-1 fs-16 fw-bold">Portfolio Summary</td>
-                <td class="summary-table-heading-2 fs-16 fw-bold" colspan="6">
+                <td class="summary-table-heading-2 fs-16 fw-bold" colspan="${currency.length}">
                   Current Value in Original Currency
                 </td>
               </tr>
               <tr>
                 <td class="summary-table-label"></td>
-                <td class="text-primary text-center fw-bold">PHP</td>
-                ${showUSD ? `<td class="text-primary text-center fw-bold">USD<sup>1</sup></td>` : ''}
-                ${showEUR ? `<td class="text-primary text-center fw-bold">EUR<sup>2</sup></td>` : ''} 
-                ${showCNY ? `<td class="text-primary text-center fw-bold">CNY<sup>3</sup></td>` : ''}
-                ${showJPY ? `<td class="text-primary text-center fw-bold">JPY<sup>4</sup></td>` : ''}
+                ${currencyHeaders}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total Bank Portfolio</td>
-                <td class="text-center">${formatPesos(totalBankPortfolio['PHP'])}</td>
-                ${showUSD ? `<td class="text-center">${formatPesos(totalBankPortfolio['USD'])}</td>` : ''}
-                ${showEUR ? `<td class="text-center">${formatPesos(totalBankPortfolio['EUR'])}</td>` : ''}
-                ${showCNY ? `<td class="text-center">${formatPesos(totalBankPortfolio['CNY'])}</td>` : ''}
-                ${showJPY ? `<td class="text-center">${formatPesos(totalBankPortfolio['JPY'])}</td>` : ''}
+                ${bankPortfolioRow}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total Trust Portfolio</td>
-                <td class="text-center">${formatPesos(totalTrustPortfolio['PHP'])}</td>
-                ${showUSD ? `<td class="text-center">${formatPesos(totalTrustPortfolio['USD'])}</td>` : ''} 
-                ${showEUR ? `<td class="text-center">${formatPesos(totalTrustPortfolio['EUR'])}</td>` : ''}
-                ${showCNY ? `<td class="text-center">${formatPesos(totalTrustPortfolio['CNY'])}</td>` : ''}
-                ${showJPY ? `<td class="text-center">${formatPesos(totalTrustPortfolio['JPY'])}</td>` : ''}
+                ${trustPortfolioRow}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold">Total CBC Securities Portfolio</td>
-                <td class="text-center">${formatPesos(totalCBSecMarketValue['PHP'])}</td>
-                ${showUSD ? `<td class="text-center">${formatPesos(totalCBSecMarketValue['USD'])}</td>` : ''}
-                ${showEUR ? `<td class="text-center">${formatPesos(totalCBSecMarketValue['EUR'])}</td>` : ''}
-                ${showCNY ? `<td class="text-center">${formatPesos(totalCBSecMarketValue['CNY'])}</td>` : ''}
-                ${showJPY ? `<td class="text-center">${formatPesos(totalCBSecMarketValue['JPY'])}</td>` : ''}
+                ${cbsecMarketValueRow}
               </tr>
               <tr>
                 <td class="summary-table-label text-primary fw-bold uppercase font-weight-700">Grand Total</td>
-                <td class="fw-bold text-center">${formatPesos(totalBankPortfolio['PHP'] + totalTrustPortfolio['PHP'] + totalCBSecMarketValue['PHP'])}</td>
-                ${showUSD ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio['USD'] + totalTrustPortfolio['USD'] + totalCBSecMarketValue['USD'])}</td>` : ''}
-                ${showEUR ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio['EUR'] + totalTrustPortfolio['EUR'] + totalCBSecMarketValue['EUR'])}</td>` : ''}
-                ${showCNY ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio['CNY'] + totalTrustPortfolio['CNY'] + totalCBSecMarketValue['CNY'])}</td>` : ''}
-                ${showJPY ? `<td class="fw-bold text-center">${formatPesos(totalBankPortfolio['JPY'] + totalTrustPortfolio['JPY'] + totalCBSecMarketValue['JPY'])}</td>` : ''}
+                ${grandTotalRow}
               </tr>
             </tbody>
           </table>
@@ -209,7 +214,7 @@ export default ({
                   <div>Foreign Currency Exchange Rates as of ${getLastDayOfMonth(month, year)}</div>
                   ${
                     currency
-                      .filter(code => code !== 'PHP' && currencyConfig[code] !== undefined && latestCurrencyRates[code] !== undefined)
+                      .filter(code => code !== 'PHP' && latestCurrencyRates[code] !== undefined)
                       .map(code => {
                         const rate = parseFloat(latestCurrencyRates[code]).toFixed(2);
                         return `<div>${currencyConfig[code]} ${code} - ${rate}</div>`;

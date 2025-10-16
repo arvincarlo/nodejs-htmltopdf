@@ -78,6 +78,14 @@ router.post('/users', async (req, res) => {
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
     const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
     
+    // Fetch rates, and filter rates only for the user's currencies
+    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
+    const latestCurrencyRates = {};
+    for (const code of currencyCodes) {
+      if (allLatestCurrencyRates.hasOwnProperty(code)) {
+        latestCurrencyRates[code] = allLatestCurrencyRates[code];
+      }
+    }
     
     // Getting the value per currency
     const totalTrustPortfolio = {};
@@ -106,15 +114,6 @@ router.post('/users', async (req, res) => {
       transactionHistory[currencyCode] = await getTransactionHistory(data.cifNumber, data.month, data.year, currencyCode);
     }
     
-    // Fetch rates, and filter rates only for the user's currencies
-    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
-    const latestCurrencyRates = {};
-    for (const code of currencyCodes) {
-      if (allLatestCurrencyRates.hasOwnProperty(code)) {
-        latestCurrencyRates[code] = allLatestCurrencyRates[code];
-      }
-    }
-
     // Get all currency codes present in any of the objects
     const allCurrencies = Array.from(
       new Set([
@@ -237,13 +236,16 @@ router.get('/users', async (req, res) => {
     );
     const footerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
-    );
+    );1
 
     // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
-    const currencyCodes = Object.keys(currencyConfig).filter(code => allUserCurrencies.includes(code));
-    
-    
+    const preferredOrder = ['PHP', 'USD', 'EUR', 'CNY', 'JPY'];
+    const currencyCodes = [
+      ...preferredOrder.filter(code => allUserCurrencies.includes(code)),
+      ...allUserCurrencies.filter(code => !preferredOrder.includes(code)).sort()
+    ]
+
     // Getting the value per currency
     const totalTrustPortfolio = {};
     const totalBankPortfolio = {};

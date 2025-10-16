@@ -3,6 +3,6 @@ export const currencyConfig = {
   USD: '1',
   EUR: '2',
   CNY: '3',
-  JPY: '4'
+  JPY: '4',
 };
 
