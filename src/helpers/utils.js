@@ -8,7 +8,7 @@ import {
   getAllCBSecMapping,
   getAllTrustUitf,
   getLatestCurrencyRatesByMonth,
-} from "../services/users.js";
+} from "../services/soa.js";
 
 export function formatPesos(value) {
   if (typeof value !== 'number') value = Number(value) || 0;

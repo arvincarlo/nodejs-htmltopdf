@@ -19,7 +19,7 @@ import {
   getTotalBankPortfolioPerCurrency,
   getTotalCBSecMarketValue,
   getLatestCurrencyRatesByMonth,
-} from "../services/users.js";
+} from "../services/soa.js";
 import summaryTemplate from '../templates/soa/template.js';
 import { currencyPreferredOrder } from '../constants/currency.js';
 import { sumOfFields, getPrevMonthAUM } from '../helpers/utils.js';
@@ -59,7 +59,7 @@ router.get('/health', (req, res) => {
   });
 });
 
-router.post('/users', async (req, res) => {
+router.post('/soa', async (req, res) => {
   const data = req.body;
   console.log("data in export: ", data);
   try {
@@ -209,14 +209,14 @@ router.post('/users', async (req, res) => {
     res.contentType('application/pdf');
     res.send(pdf);
   } catch (error) {
-    console.error('Error fetching the users: ', error);
-    res.status(500).send('No users found.');
+    console.error('Error fetching the soa: ', error);
+    res.status(500).send('No soa found.');
   }
 });
 
-router.get('/users', async (req, res) => {
+router.get('/soa', async (req, res) => {
   const data = {
-    month: 'Nov',
+    month: 'Dec',
     year: '2024',
     accountName: 'Jane Peterson',
     unitTrustsValue: 2000000,
@@ -376,8 +376,8 @@ router.get('/users', async (req, res) => {
     res.contentType('application/pdf');
     res.send(pdf);
   } catch (error) {
-    console.error('Error fetching the users: ', error);
-    res.status(500).send('No users found.');
+    console.error('Error fetching the soa: ', error);
+    res.status(500).send('No soa found.');
   }
 });
 
