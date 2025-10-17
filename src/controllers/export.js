@@ -237,6 +237,8 @@ router.get('/soa', async (req, res) => {
     
     // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
+    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
+
     console.log('allUserCurrencies', allUserCurrencies);
     const preferredOrder = ['PHP', 'USD', 'EUR', 'CNY', 'JPY'];
     const currencyCodes = [
@@ -244,7 +246,8 @@ router.get('/soa', async (req, res) => {
       ...allUserCurrencies.filter(code => !preferredOrder.includes(code)).sort()
     ]
 
-
+    // Fetch rates, and filter rates only for the user's currencies
+    const latestCurrencyRates = {};
     const fcbsDeposits = {};
     const timeDeposits = {};
     const trustDeposits = {};
@@ -253,36 +256,7 @@ router.get('/soa', async (req, res) => {
     const cbsecMapping = {};
     const trustUitf = {};
     const transactionHistory = {};
-    
-    for (const currencyCode of currencyCodes) {
-      fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
-      timeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
-      trustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
-      trustFixedIncome[currencyCode] = await getAllTrustFixedIncome(data.cifNumber, data.month, data.year, currencyCode);
-      trustEquities[currencyCode] = await getAllTrustEquities(data.cifNumber, data.month, data.year, currencyCode);
-      cbsecMapping[currencyCode] = await getAllCBSecMapping(data.cifNumber, currencyCode);
-      trustUitf[currencyCode] = await getAllTrustUitf(data.cifNumber, data.month, data.year, currencyCode);
-      transactionHistory[currencyCode] = await getTransactionHistory(data.cifNumber, data.month, data.year, currencyCode);
-    }
-    
-    // Fetch rates, and filter rates only for the user's currencies
-    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
-    const latestCurrencyRates = {};
-    for (const code of currencyCodes) {
-      if (allLatestCurrencyRates.hasOwnProperty(code)) {
-        latestCurrencyRates[code] = allLatestCurrencyRates[code];
-      }
-    }
 
-    // Get all currency codes present in any of the objects
-    const allCurrencies = Array.from(
-      new Set([
-        ...Object.keys(fcbsDeposits),
-        ...Object.keys(timeDeposits),
-        ...Object.keys(trustDeposits)
-      ])
-    );
-    
     // Product Holdings Section
     let totalMoneyMarket = 0;
     let totalFixedIncome = 0;
@@ -293,37 +267,45 @@ router.get('/soa', async (req, res) => {
     const totalTrustPortfolio = {};
     const totalCBSecMarketValue = {};
     
-    for (const code of allCurrencies) {
+    for (const currencyCode of currencyCodes) {
+      if (allLatestCurrencyRates.hasOwnProperty(currencyCode)) {
+        latestCurrencyRates[currencyCode] = allLatestCurrencyRates[currencyCode];
+      }
+
+      fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      timeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      trustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
+      trustFixedIncome[currencyCode] = await getAllTrustFixedIncome(data.cifNumber, data.month, data.year, currencyCode);
+      trustEquities[currencyCode] = await getAllTrustEquities(data.cifNumber, data.month, data.year, currencyCode);
+      cbsecMapping[currencyCode] = await getAllCBSecMapping(data.cifNumber, currencyCode);
+      trustUitf[currencyCode] = await getAllTrustUitf(data.cifNumber, data.month, data.year, currencyCode);
+      transactionHistory[currencyCode] = await getTransactionHistory(data.cifNumber, data.month, data.year, currencyCode);
+
       // Deposit CASA
-      const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
+      const depositPHP = sumOfFields(fcbsDeposits[currencyCode], 'availableBalance');
       // Time Deposit
-      const timeDepositPHP = sumOfFields(timeDeposits[code], 'principalAmount');
+      const timeDepositPHP = sumOfFields(timeDeposits[currencyCode], 'principalAmount');
       // Trust TD
-      const trustDepositPHP = sumOfFields(trustDeposits[code], 'principalAmount');
+      const trustDepositPHP = sumOfFields(trustDeposits[currencyCode], 'principalAmount');
       // Trust Fixed Income
-      const fixedIncomePHP = sumOfFields(trustFixedIncome[code], 'faceAmount');
+      const fixedIncomePHP = sumOfFields(trustFixedIncome[currencyCode], 'faceAmount');
 
       // Equities (Trust Equities + CB Securities Mapping)
-      const trustEquitiesPHP = sumOfFields(trustEquities[code], 'purchaseAmount');
-      const cbsecMappingPHP = sumOfFields(cbsecMapping[code], 'netPurchaseAmount');
+      const trustEquitiesPHP = sumOfFields(trustEquities[currencyCode], 'purchaseAmount');
+      const cbsecMappingPHP = sumOfFields(cbsecMapping[currencyCode], 'netPurchaseAmount');
 
-      // Convert to PHP if not PHP (code 0)
-      const rate = code === 'PHP' ? 1 : (latestCurrencyRates[code] || 1);
+      // Convert to PHP if not PHP (currencyCode PHP)
+      const rate = currencyCode === 'PHP' ? 1 : (latestCurrencyRates[currencyCode] || 1);
       totalMoneyMarket += (depositPHP + timeDepositPHP + trustDepositPHP) * rate;
       totalFixedIncome += fixedIncomePHP * rate;
       totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
       totalStructuredProducts += (0) * rate;
-      totalTrustUitf += sumOfFields(trustUitf[code], 'purchaseAmount') * rate;
+      totalTrustUitf += sumOfFields(trustUitf[currencyCode], 'purchaseAmount') * rate;
 
-      totalBankPortfolio[code] = sumOfFields(fcbsDeposits[code], 'availableBalance') + sumOfFields(timeDeposits[code], 'principalAmount');
-      totalTrustPortfolio[code] = sumOfFields(trustDeposits[code], 'principalAmount') + sumOfFields(trustFixedIncome[code], 'faceAmount') + sumOfFields(trustEquities[code], 'purchaseAmount') + sumOfFields(trustUitf[code], 'purchaseAmount');
-      totalCBSecMarketValue[code] = sumOfFields(cbsecMapping[code], 'marketValue');
-
+      totalBankPortfolio[currencyCode] = sumOfFields(fcbsDeposits[currencyCode], 'availableBalance') + sumOfFields(timeDeposits[currencyCode], 'principalAmount');
+      totalTrustPortfolio[currencyCode] = sumOfFields(trustDeposits[currencyCode], 'principalAmount') + sumOfFields(trustFixedIncome[currencyCode], 'faceAmount') + sumOfFields(trustEquities[currencyCode], 'purchaseAmount') + sumOfFields(trustUitf[currencyCode], 'purchaseAmount');
+      totalCBSecMarketValue[currencyCode] = sumOfFields(cbsecMapping[currencyCode], 'marketValue');
     }
-    
-    console.log('totalBankPortfolio', totalBankPortfolio);
-    console.log('totalTrustPortfolio', totalTrustPortfolio);
-    console.log('totalCBSecMarketValue', totalCBSecMarketValue);
 
     // GET summary and pie chart
     const pieChartData = Object.fromEntries(

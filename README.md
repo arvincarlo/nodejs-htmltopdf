@@ -217,3 +217,18 @@ yung table na nagpapagana sakin ngayon, eto din yung gagamitin dun sa uat
 comes uat-handoff 2, dun na manggagaling yung data nya ngayon
 
 pa-help ako kay king
+
+
+
+Deployment steps
+1. Build
+
+Server: 10.121.22.148
+ 
+DEV Servers:  
+10.120.37.20/CBCCIBDDV-AP  
+10.120.37.5/CBCCIBDDV-DB  
+10.120.37.52/CBCCIBDDV-WB 
+ 
+
+ 
