@@ -216,7 +216,7 @@ router.post('/soa', async (req, res) => {
 
 router.get('/soa', async (req, res) => {
   const data = {
-    month: 'Dec',
+    month: 'Nov',
     year: '2024',
     accountName: 'Jane Peterson',
     cifNumber: 'R23500000',
@@ -234,9 +234,10 @@ router.get('/soa', async (req, res) => {
     const footerLogoBase64 = getBase64Image(
       path.join(process.cwd(), 'public', 'images', 'footer-logo.png')
     );
-
+    
     // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
+    console.log('allUserCurrencies', allUserCurrencies);
     const preferredOrder = ['PHP', 'USD', 'EUR', 'CNY', 'JPY'];
     const currencyCodes = [
       ...preferredOrder.filter(code => allUserCurrencies.includes(code)),
@@ -318,19 +319,23 @@ router.get('/soa', async (req, res) => {
       totalTrustPortfolio[code] = sumOfFields(trustDeposits[code], 'principalAmount') + sumOfFields(trustFixedIncome[code], 'faceAmount') + sumOfFields(trustEquities[code], 'purchaseAmount') + sumOfFields(trustUitf[code], 'purchaseAmount');
       totalCBSecMarketValue[code] = sumOfFields(cbsecMapping[code], 'marketValue');
 
-      console.log('totalBankPortfolio', totalBankPortfolio);
-      console.log('totalTrustPortfolio', totalTrustPortfolio);
-      console.log('totalCBSecMarketValue', totalCBSecMarketValue);
     }
+    
+    console.log('totalBankPortfolio', totalBankPortfolio);
+    console.log('totalTrustPortfolio', totalTrustPortfolio);
+    console.log('totalCBSecMarketValue', totalCBSecMarketValue);
 
     // GET summary and pie chart
-    const pieChartData = {
-      totalMoneyMarket,
-      totalFixedIncome,
-      totalEquities,
-      totalStructuredProducts,
-      totalTrustUitf
-    }
+    const pieChartData = Object.fromEntries(
+      Object.entries({
+        'Money Market': totalMoneyMarket,
+        'Fixed Income': totalFixedIncome,
+        'Equities': totalEquities,
+        'Structured Products': totalStructuredProducts,
+        'Trust UITF': totalTrustUitf
+      }).filter(([_, value]) => value && value !== 0)
+    );
+
     const portfolioPieChart = await generatePortfolioPieChart(pieChartData);
     const currencyPieChart = await generateCurrencyPieChart(latestCurrencyRates);
 

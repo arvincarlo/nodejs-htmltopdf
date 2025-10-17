@@ -365,6 +365,21 @@ export async function getAllUserCurrency(cifNumber, month, year) {
         WHERE [cifNumber] = @cifNumber
           AND MONTH([valueDate]) = @monthNum
           AND YEAR([valueDate]) = @yearNum
+      UNION
+      SELECT DISTINCT [currency] FROM TrustFixedIncome
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNum
+      UNION
+      SELECT DISTINCT [currency] FROM TrustEquities
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNum
+      UNION
+      SELECT DISTINCT [currency] FROM TrustUitf
+        WHERE [cifNumber] = @cifNumber
+          AND MONTH([valueDate]) = @monthNum
+          AND YEAR([valueDate]) = @yearNum
     `;
 
     // Convert month shortname to month number (jun -> 6)

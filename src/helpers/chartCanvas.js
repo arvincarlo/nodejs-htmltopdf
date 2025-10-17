@@ -16,21 +16,8 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({
 // }
 
 export async function generatePortfolioPieChart(pieChartData) {
-  const labels = [
-    'Money Market',
-    'Fixed Income',
-    'Equities',
-    'Structured Products',
-    'Unit Trusts',
-  ];
-  const values = [
-    pieChartData.totalMoneyMarket || 0,
-    pieChartData.totalFixedIncome || 0,
-    pieChartData.totalEquities || 0,
-    pieChartData.totalStructuredProducts || 0,
-    pieChartData.totalTrustUitf || 0,
-  ];
-  const total = values.reduce((sum, val) => sum + val, 0);
+  const labels = Object.keys(pieChartData);
+  const values = Object.values(pieChartData);
 
   // Visibly distinct shades of red
   const backgroundColor = [
@@ -39,7 +26,10 @@ export async function generatePortfolioPieChart(pieChartData) {
     '#DC143C', // Crimson
     '#FF6347', // Tomato
     '#FF7F7F', // Light Red
-  ];
+    '#FFB6C1', // Pink
+    '#FFA07A', // Light Salmon
+    '#CD5C5C', // Indian Red
+  ].slice(0, labels.length);
 
   const configuration = {
     type: 'doughnut',
@@ -57,9 +47,10 @@ export async function generatePortfolioPieChart(pieChartData) {
       plugins: {
         legend: { position: 'bottom' },
         datalabels: {
-          color: '#fff', // White text
+          color: '#fff',
           font: { weight: 'bold', size: 22 },
           formatter: (value, context) => {
+            const total = values.reduce((sum, v) => sum + v, 0);
             const percent = total ? Math.round((value / total) * 100) : 0;
             return `${percent}%`;
           }
