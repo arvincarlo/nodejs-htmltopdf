@@ -136,11 +136,5 @@ export async function getPrevMonthAUM(cifNumber, month, year) {
   }
 
   const totalPrevMonthAUM = totalMoneyMarket + totalFixedIncome + totalEquities + totalStructuredProducts + totalTrustUitf;
-  console.log("allUserCurrencies" , allUserCurrencies);
-  console.log(prevMonth, " latestCurrencyRates " , latestCurrencyRates);
-  console.log("prevMonth" , prevMonth);
-  console.log("prevYear" , prevYear);
-  console.log("fcbsDeposits" , fcbsDeposits);
-  console.log("totalPrevMonthAUM" , totalPrevMonthAUM);
   return totalPrevMonthAUM;
 }

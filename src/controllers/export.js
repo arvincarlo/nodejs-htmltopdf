@@ -107,7 +107,7 @@ router.post('/soa', async (req, res) => {
       trustUitf[currencyCode] = await getAllTrustUitf(data.cifNumber, data.month, data.year, currencyCode);
       transactionHistory[currencyCode] = await getTransactionHistory(data.cifNumber, data.month, data.year, currencyCode);
     }
-    
+
     // Fetch rates, and filter rates only for the user's currencies
     const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
     const latestCurrencyRates = {};
@@ -137,9 +137,9 @@ router.post('/soa', async (req, res) => {
       // Deposit CASA
       const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
       // Time Deposit
-      const timeDepPHP = sumOfFields(timeDeposits[code], 'principalAmount');
+      const timeDepositPHP = sumOfFields(timeDeposits[code], 'principalAmount');
       // Trust TD
-      const trustDepPHP = sumOfFields(trustDeposits[code], 'principalAmount');
+      const trustDepositPHP = sumOfFields(trustDeposits[code], 'principalAmount');
       // Trust Fixed Income
       const fixedIncomePHP = sumOfFields(trustFixedIncome[code], 'faceAmount');
 
@@ -149,7 +149,7 @@ router.post('/soa', async (req, res) => {
 
       // Convert to PHP if not PHP (code 0)
       const rate = code === 'PHP' ? 1 : (latestCurrencyRates[code] || 1);
-      totalMoneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
+      totalMoneyMarket += (depositPHP + timeDepositPHP + trustDepositPHP) * rate;
       totalFixedIncome += fixedIncomePHP * rate;
       totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
       totalStructuredProducts += (0) * rate;
@@ -219,11 +219,6 @@ router.get('/soa', async (req, res) => {
     month: 'Dec',
     year: '2024',
     accountName: 'Jane Peterson',
-    unitTrustsValue: 2000000,
-    structuredProductsValue: 100000,
-    equitiesValue: 800000,
-    fixedIncomeValue: 1500000,
-    moneyMarketValue: 1000000,
     cifNumber: 'R23500000',
   }
 
@@ -248,10 +243,7 @@ router.get('/soa', async (req, res) => {
       ...allUserCurrencies.filter(code => !preferredOrder.includes(code)).sort()
     ]
 
-    // Getting the value per currency
-    const totalTrustPortfolio = {};
-    const totalBankPortfolio = {};
-    const totalCBSecMarketValue = {};
+
     const fcbsDeposits = {};
     const timeDeposits = {};
     const trustDeposits = {};
@@ -262,9 +254,6 @@ router.get('/soa', async (req, res) => {
     const transactionHistory = {};
     
     for (const currencyCode of currencyCodes) {
-      totalBankPortfolio[currencyCode] = await getTotalBankPortfolioPerCurrency(data.cifNumber, data.month, data.year, currencyCode);
-      totalTrustPortfolio[currencyCode] = await getTotalTrustPortfolioPerCurrency(data.cifNumber, currencyCode);
-      totalCBSecMarketValue[currencyCode] = await getTotalCBSecMarketValue(data.cifNumber, currencyCode);
       fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
       timeDeposits[currencyCode] = await getAllTimeDeposits(data.cifNumber, data.month, data.year, currencyCode);
       trustDeposits[currencyCode] = await getAllTrustDeposits(data.cifNumber, data.month, data.year, currencyCode);
@@ -299,14 +288,17 @@ router.get('/soa', async (req, res) => {
     let totalEquities = 0;
     let totalStructuredProducts = 0;
     let totalTrustUitf = 0;
+    const totalBankPortfolio = {};
+    const totalTrustPortfolio = {};
+    const totalCBSecMarketValue = {};
     
     for (const code of allCurrencies) {
       // Deposit CASA
       const depositPHP = sumOfFields(fcbsDeposits[code], 'availableBalance');
       // Time Deposit
-      const timeDepPHP = sumOfFields(timeDeposits[code], 'principalAmount');
+      const timeDepositPHP = sumOfFields(timeDeposits[code], 'principalAmount');
       // Trust TD
-      const trustDepPHP = sumOfFields(trustDeposits[code], 'principalAmount');
+      const trustDepositPHP = sumOfFields(trustDeposits[code], 'principalAmount');
       // Trust Fixed Income
       const fixedIncomePHP = sumOfFields(trustFixedIncome[code], 'faceAmount');
 
@@ -316,11 +308,19 @@ router.get('/soa', async (req, res) => {
 
       // Convert to PHP if not PHP (code 0)
       const rate = code === 'PHP' ? 1 : (latestCurrencyRates[code] || 1);
-      totalMoneyMarket += (depositPHP + timeDepPHP + trustDepPHP) * rate;
+      totalMoneyMarket += (depositPHP + timeDepositPHP + trustDepositPHP) * rate;
       totalFixedIncome += fixedIncomePHP * rate;
       totalEquities += (trustEquitiesPHP + cbsecMappingPHP) * rate;
       totalStructuredProducts += (0) * rate;
       totalTrustUitf += sumOfFields(trustUitf[code], 'purchaseAmount') * rate;
+
+      totalBankPortfolio[code] = sumOfFields(fcbsDeposits[code], 'availableBalance') + sumOfFields(timeDeposits[code], 'principalAmount');
+      totalTrustPortfolio[code] = sumOfFields(trustDeposits[code], 'principalAmount') + sumOfFields(trustFixedIncome[code], 'faceAmount') + sumOfFields(trustEquities[code], 'purchaseAmount') + sumOfFields(trustUitf[code], 'purchaseAmount');
+      totalCBSecMarketValue[code] = sumOfFields(cbsecMapping[code], 'marketValue');
+
+      console.log('totalBankPortfolio', totalBankPortfolio);
+      console.log('totalTrustPortfolio', totalTrustPortfolio);
+      console.log('totalCBSecMarketValue', totalCBSecMarketValue);
     }
 
     // GET summary and pie chart
@@ -333,9 +333,6 @@ router.get('/soa', async (req, res) => {
     }
     const portfolioPieChart = await generatePortfolioPieChart(pieChartData);
     const currencyPieChart = await generateCurrencyPieChart(latestCurrencyRates);
-    
-    console.log('currency codes ', currencyCodes);
-    console.log(data.month + ' latest currency rates ', allLatestCurrencyRates);
 
     const overallTotalValue =
       (totalMoneyMarket || 0) +
