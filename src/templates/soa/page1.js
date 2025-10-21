@@ -216,7 +216,7 @@ export default ({
                     currency
                       .filter(code => code !== 'PHP' && latestCurrencyRates[code] !== undefined)
                       .map(code => {
-                        const rate = parseFloat(latestCurrencyRates[code]).toFixed(2);
+                        const rate = (latestCurrencyRates[code]);
                         return `<div>${currencyConfig[code] || ''} ${code} - ${rate}</div>`;
                       }).join('')
                   }
