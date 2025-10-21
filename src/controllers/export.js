@@ -15,10 +15,7 @@ import {
   getAllTrustEquities,
   getAllCBSecMapping,
   getAllTrustUitf,
-  getTotalTrustPortfolioPerCurrency,
-  getTotalBankPortfolioPerCurrency,
-  getTotalCBSecMarketValue,
-  getLatestCurrencyRatesByMonth,
+  getAllForexRates
 } from "../services/soa.js";
 import summaryTemplate from '../templates/soa/template.js';
 import { currencyPreferredOrder } from '../constants/currency.js';
@@ -75,13 +72,14 @@ router.post('/soa', async (req, res) => {
     
     // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
-    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
+    const allForexRates = await getAllForexRates(data.month, data.year);
 
-    console.log('allUserCurrencies', allUserCurrencies);
-    const preferredOrder = ['PHP', 'USD', 'EUR', 'CNY', 'JPY'];
+    console.log('allUserCurrencies: ', allUserCurrencies);
+    console.log('allForexRates: ', allForexRates);
+
     const currencyCodes = [
-      ...preferredOrder.filter(code => allUserCurrencies.includes(code)),
-      ...allUserCurrencies.filter(code => !preferredOrder.includes(code)).sort()
+      ...currencyPreferredOrder.filter(code => allUserCurrencies.includes(code)),
+      ...allUserCurrencies.filter(code => !currencyPreferredOrder.includes(code)).sort()
     ]
 
     // Fetch rates, and filter rates only for the user's currencies
@@ -106,8 +104,8 @@ router.post('/soa', async (req, res) => {
     const totalCBSecMarketValue = {};
     
     for (const currencyCode of currencyCodes) {
-      if (allLatestCurrencyRates.hasOwnProperty(currencyCode)) {
-        latestCurrencyRates[currencyCode] = allLatestCurrencyRates[currencyCode];
+      if (allForexRates.hasOwnProperty(currencyCode)) {
+        latestCurrencyRates[currencyCode] = allForexRates[currencyCode];
       }
 
       fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);
@@ -205,7 +203,7 @@ router.post('/soa', async (req, res) => {
 
 router.get('/soa', async (req, res) => {
   const data = {
-    month: 'Oct',
+    month: 'Nov',
     year: '2024',
     accountName: 'Jane Peterson',
     cifNumber: 'R23500000',
@@ -226,13 +224,14 @@ router.get('/soa', async (req, res) => {
     
     // GET All the currency of the user
     const allUserCurrencies = await getAllUserCurrency(data.cifNumber, data.month, data.year);
-    const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(data.month, data.year);
+    const allForexRates = await getAllForexRates(data.month, data.year);
 
-    console.log('allUserCurrencies', allUserCurrencies);
-    const preferredOrder = ['PHP', 'USD', 'EUR', 'CNY', 'JPY'];
+    console.log('allUserCurrencies: ', allUserCurrencies);
+    console.log('allForexRates: ', allForexRates);
+
     const currencyCodes = [
-      ...preferredOrder.filter(code => allUserCurrencies.includes(code)),
-      ...allUserCurrencies.filter(code => !preferredOrder.includes(code)).sort()
+      ...currencyPreferredOrder.filter(code => allUserCurrencies.includes(code)),
+      ...allUserCurrencies.filter(code => !currencyPreferredOrder.includes(code)).sort()
     ]
 
     // Fetch rates, and filter rates only for the user's currencies
@@ -257,8 +256,8 @@ router.get('/soa', async (req, res) => {
     const totalCBSecMarketValue = {};
     
     for (const currencyCode of currencyCodes) {
-      if (allLatestCurrencyRates.hasOwnProperty(currencyCode)) {
-        latestCurrencyRates[currencyCode] = allLatestCurrencyRates[currencyCode];
+      if (allForexRates.hasOwnProperty(currencyCode)) {
+        latestCurrencyRates[currencyCode] = allForexRates[currencyCode];
       }
 
       fcbsDeposits[currencyCode] = await getFcbsDeposits(data.cifNumber, data.month, data.year, currencyCode);

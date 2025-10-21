@@ -7,7 +7,7 @@ import {
   getAllTrustEquities,
   getAllCBSecMapping,
   getAllTrustUitf,
-  getLatestCurrencyRatesByMonth,
+  getAllForexRates,
 } from "../services/soa.js";
 
 export function formatPesos(value) {
@@ -87,7 +87,7 @@ export async function getPrevMonthAUM(cifNumber, month, year) {
   }
 
   // Fetch Rates, and filter rates only for the user's currencies (prevMonth)
-  const allLatestCurrencyRates = await getLatestCurrencyRatesByMonth(prevMonth, prevYear)
+  const allLatestCurrencyRates = await getAllForexRates(prevMonth, prevYear)
 
   const latestCurrencyRates = {};
   for (const code of allUserCurrencies) {

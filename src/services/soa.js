@@ -404,106 +404,7 @@ export async function getAllUserCurrency(cifNumber, month, year) {
   }
 }
 
-export async function getTotalBankPortfolioPerCurrency(cifNumber, month, year, currency) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT
-        ISNULL(SUM(fd.[availableBalance]), 0) AS totalAvailableBalance,
-        (
-          SELECT ISNULL(SUM([principalAmount]), 0)
-          FROM FcbsTimeDeposits
-          WHERE [cifNumber] = @cifNumber AND [currency] = @currency
-        ) AS totalPrincipalAmount
-      FROM FcbsDeposits fd
-      WHERE fd.[cifNumber] = @cifNumber
-        AND MONTH(fd.[dateCovered]) = @monthNum
-        AND YEAR(fd.[dateCovered]) = @yearNum
-        AND fd.[currency] = @currency
-    `;
-
-    // Convert month shortname to month number (jun -> 6)
-    const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
-    const yearNum = parseInt(year, 10);
-
-    const request = new sql.Request();
-    request.input('cifNumber', sql.VarChar, cifNumber);
-    request.input('monthNum', sql.VarChar, monthNum);
-    request.input('yearNum', sql.VarChar, yearNum);
-    request.input('currency', sql.VarChar, currency);
-
-    const result = await request.query(query);
-    await sql.close();
-
-    const row = result.recordset[0] || {};
-    // Return the sum of availableBalance and principalAmount
-    return (row.totalAvailableBalance || 0) + (row.totalPrincipalAmount || 0);
-  } catch (error) {
-    console.error('SQL error:', error);
-    return 0;
-  }
-}
-
-export async function getTotalTrustPortfolioPerCurrency(cifNumber, currency) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT
-        ISNULL((SELECT SUM(faceAmount) FROM TrustFixedIncome WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalFixedIncome,
-        ISNULL((SELECT SUM(purchaseAmount) FROM TrustEquities WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalEquities,
-        ISNULL((SELECT SUM(purchaseAmount) FROM TrustUitf WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalUitf,
-        ISNULL((SELECT SUM(principalAmount) FROM TrustDeposits WHERE cifNumber = @cifNumber AND currency = @currency), 0) AS totalDeposits
-    `;
-    const request = new sql.Request();
-    request.input('cifNumber', sql.VarChar, cifNumber);
-    request.input('currency', sql.VarChar, currency);
-    const result = await request.query(query);
-    await sql.close();
-
-    const row = result.recordset[0] || {};
-
-    // Sum all fields for the total
-    return (
-      (row.totalDeposits || 0) +
-      (row.totalFixedIncome || 0) +
-      (row.totalEquities || 0) +
-      (row.totalUitf || 0)
-    );
-  } catch (error) {
-    console.error('SQL error:', error);
-    return 0;
-  }
-}
-
-export async function getTotalCBSecMarketValue(cifNumber, currency) {
-  try {
-    await sql.connect(config);
-    const query = `
-      SELECT *
-      FROM CBSecMapping
-      WHERE accountCode IN (
-        SELECT AccountNumber
-        FROM AccountDataTables
-        WHERE [Cif] = @Cif
-      )
-      AND accountType = @currency
-    `;
-      
-    const request = new sql.Request();
-    request.input('Cif', sql.VarChar, cifNumber);
-    request.input('currency', sql.VarChar, currency);
-    
-    const result = await request.query(query);
-    await sql.close();
-      
-    return result.recordset.reduce((acc, row) => acc + (row.marketValue || 0), 0);
-  } catch (error) {
-    console.error('SQL error: ', error);
-    return 0;
-  }
-}
-
-export async function getLatestCurrencyRatesByMonth(month, year) {
+export async function getAllForexRates(month, year) {
   const rates = {};
   await sql.connect(config);
 
@@ -517,27 +418,26 @@ export async function getLatestCurrencyRatesByMonth(month, year) {
   const lastDayStr = `${yearNum}-${monthNum.toString().padStart(2, '0')}-${lastDay.getDate().toString().padStart(2, '0')}`;
 
   const query = `
-    SELECT currencyCode, rate
-    FROM CurrencyExchangeRates
-    WHERE effectiveDate >= @firstDay
-      AND effectiveDate <= @lastDay
-      AND effectiveDate = (
-        SELECT MAX(effectiveDate)
-        FROM CurrencyExchangeRates r2
-        WHERE r2.currencyCode = CurrencyExchangeRates.currencyCode
-          AND r2.effectiveDate >= @firstDay
-          AND r2.effectiveDate <= @lastDay
+    SELECT [FROM], [TO], [CONVERSIONRATE]
+    FROM Forex
+    WHERE [CURRENCY_CONVERSION_DATE] >= @firstDay
+      AND [CURRENCY_CONVERSION_DATE] <= @lastDay
+      AND [CURRENCY_CONVERSION_DATE] = (
+        SELECT MAX([CURRENCY_CONVERSION_DATE])
+        FROM Forex r2
+        WHERE r2.[FROM] = Forex.[FROM]
+          AND r2.[CURRENCY_CONVERSION_DATE] >= @firstDay
+          AND r2.[CURRENCY_CONVERSION_DATE] <= @lastDay
       )
   `;
 
   const request = new sql.Request();
   request.input('firstDay', sql.Date, firstDay);
   request.input('lastDay', sql.Date, lastDayStr);
-
   const result = await request.query(query);
 
   for (const row of result.recordset) {
-    rates[row.currencyCode] = row.rate;
+    rates[row.FROM] = row.CONVERSIONRATE;
   }
   return rates;
 }
